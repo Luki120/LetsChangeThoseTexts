@@ -6,4 +6,4 @@ Description: A goddamn neat awesome MobileSubstrate tweak
 Maintainer: Luki
 Author: Luki
 Section: Tweaks
-Depends: mobilesubstrate (>= 0.9.5000)
+Depends: mobilesubstrate, preferenceloader

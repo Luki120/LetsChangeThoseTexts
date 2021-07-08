@@ -1,51 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>items</key>
-	<array>
-		<dict>
-			<key>cell</key>
-			<string>PSSwitchCell</string>
-			<key>default</key>
-			<true/>
-			<key>defaults</key>
-			<string>me.luki.runtimeoverflow.lcttprefs</string>
-			<key>key</key>
-			<string>enableTweak</string>
-			<key>label</key>
-			<string>Enable</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSEditTextCell</string>
-			<key>placeholder</key>
-			<string>Incoming Text</string>
-			<key>defaults</key>
-			<string>me.luki.runtimeoverflow.lcttprefs</string>
-			<key>key</key>
-			<string>incomingTextDM</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSEditTextCell</string>
-			<key>placeholderTwo</key>
-			<string>Outgoing Text</string>
-			<key>defaults</key>
-			<string>me.luki.runtimeoverflow.lcttprefs</string>
-			<key>key</key>
-			<string>outgoingTextDM</string>
-		</dict>
-	</array>
-	<key>title</key>
-	<string>LCTT</string>
-</dict>
+	<dict>
+		<key>items</key>
+		<array>
+			<dict>
+				<key>cell</key>
+				<string>PSSwitchCell</string>
+				<key>default</key>
+				<true/>
+				<key>defaults</key>
+				<string>me.luki.runtimeoverflow.lcttprefs</string>
+				<key>key</key>
+				<string>enableTweak</string>
+				<key>label</key>
+				<string>Enable</string>
+			</dict>
+			<dict>
+				<key>cell</key>
+				<string>PSGroupCell</string>
+			</dict>
+			<dict>
+				<key>cell</key>
+				<string>PSEditTextCell</string>
+				<key>placeholder</key>
+				<string>Incoming Text</string>
+				<key>defaults</key>
+				<string>me.luki.runtimeoverflow.lcttprefs</string>
+				<key>key</key>
+				<string>incomingTextDM</string>
+			</dict>
+			<dict>
+				<key>cell</key>
+				<string>PSGroupCell</string>
+			</dict>
+			<dict>
+				<key>cell</key>
+				<string>PSEditTextCell</string>
+				<key>placeholderTwo</key>
+				<string>Outgoing Text</string>
+				<key>defaults</key>
+				<string>me.luki.runtimeoverflow.lcttprefs</string>
+				<key>key</key>
+				<string>outgoingTextDM</string>
+			</dict>
+		</array>
+		<key>title</key>
+		<string>LCTT</string>
+	</dict>
 </plist>

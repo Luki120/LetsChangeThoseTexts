@@ -1,8 +1,6 @@
 #import <UIKit/UIKit.h>
 
 
-
-
 id (*oldInit)(id self, SEL _cmd, NSArray *sorted, NSDictionary *byServerId, NSDictionary *byClientContext);
 
 id newInit(id self, SEL _cmd, NSArray *sorted, NSDictionary *byServerId, NSDictionary *byClientContext) {
@@ -14,8 +12,6 @@ id newInit(id self, SEL _cmd, NSArray *sorted, NSDictionary *byServerId, NSDicti
     return (oldInit)(self, _cmd, @[msg], serverId ? @{serverId: msg} : @{}, clientContext ? @{clientContext: msg} : @{});
 
 }
-
-
 
 
 %hook IGAppDelegate
