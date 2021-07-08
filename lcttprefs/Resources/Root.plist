@@ -8,7 +8,7 @@
 				<key>cell</key>
 				<string>PSSwitchCell</string>
 				<key>default</key>
-				<true/>
+				<false/>
 				<key>defaults</key>
 				<string>me.luki.runtimeoverflow.lcttprefs</string>
 				<key>key</key>
@@ -37,12 +37,22 @@
 			<dict>
 				<key>cell</key>
 				<string>PSEditTextCell</string>
-				<key>placeholderTwo</key>
+				<key>placeholder</key>
 				<string>Outgoing Text</string>
 				<key>defaults</key>
 				<string>me.luki.runtimeoverflow.lcttprefs</string>
 				<key>key</key>
 				<string>outgoingTextDM</string>
+			</dict>
+			<dict>
+				<key>cell</key>
+				<string>PSGroupCell</string>
+				<key>footerAlignment</key>
+				<real>1</real>
+				<key>footerText</key>
+				<string>2021 © Luki120</string>
+				<key>isStaticText</key>
+				<true/>
 			</dict>
 		</array>
 		<key>title</key>
