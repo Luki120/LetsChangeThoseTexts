@@ -1,7 +1,7 @@
 export ARCHS = arm64 arm64e
 export TARGET := iphone:clang:latest:latest
 
-INSTALL_TARGET_PROCESSES = Instagram
+INSTALL_TARGET_PROCESSES = Instagram Preferences
 
 include $(THEOS)/makefiles/common.mk
 
@@ -12,3 +12,5 @@ LetsChangeThoseTexts_CFLAGS = -fobjc-arc
 #LetsChangeThoseTexts_FRAMEWORKS = UIKit
 
 include $(THEOS_MAKE_PATH)/tweak.mk
+SUBPROJECTS += lcttprefs
+include $(THEOS_MAKE_PATH)/aggregate.mk
