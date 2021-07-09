@@ -1,4 +1,7 @@
 @interface IGDirectPublishedMessageMetadata
+@property (nonatomic, readonly) NSString *serverId;
+@property (nonatomic, readonly) NSString *clientContext;
+
 - (instancetype)initWithServerTimestamp:(NSDate *)timestamp serverId:(NSString *)serverId clientContext:(NSString *)clientContext threadId:(NSString *)threadId senderPk:(NSString *)senderPk;
 @end
 
@@ -9,6 +12,8 @@
 @end
 
 @interface IGDirectPublishedMessage
+@property (nonatomic, readonly) IGDirectPublishedMessageMetadata *metadata;
+
 - (instancetype)initWithMetadata:(IGDirectPublishedMessageMetadata *)metadata content:(IGDirectPublishedMessageContent *)content quotedMessage:(id)quotedMessage reactions:(NSArray *)reactions forwardMetadata:(id)forwardMetadata powerupsMetadata:(id)powerupsMetadata violationReview:(id)violationReview instantReplies:(NSArray *)replies isShhMode:(BOOL)shhMode;
 @end
 
@@ -23,4 +28,8 @@
 @interface IGDirectUIThread
 - (NSString *)threadId;
 - (IGDirectThreadMetadata *)metadata;
+@end
+
+@interface IGProfilePictureImageView
+- (void)_setImageFromImage:(UIImage *)image shouldProcess:(BOOL)shouldProcess;
 @end

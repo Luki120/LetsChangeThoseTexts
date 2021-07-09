@@ -7,7 +7,7 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = LetsChangeThoseTexts
 
-LetsChangeThoseTexts_FILES = Tweak.x
+LetsChangeThoseTexts_FILES = Tweak.xm
 LetsChangeThoseTexts_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk
