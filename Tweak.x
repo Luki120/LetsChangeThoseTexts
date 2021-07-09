@@ -30,6 +30,11 @@ id newInit(id self, SEL _cmd, NSArray *sorted, NSDictionary *byServerId, NSDicti
 
 }
 
+BOOL newApproved(id self, SEL _cmd) {
+
+    return true;
+
+}
 
 %hook IGAppDelegate
 
@@ -42,6 +47,7 @@ id newInit(id self, SEL _cmd, NSArray *sorted, NSDictionary *byServerId, NSDicti
     if(!enableTweak) return;
     
     MSHookMessageEx(NSClassFromString(@"IGDirectPublishedMessageSet"), @selector(initWithSortedMessages:messagesByServerId:messagesByClientContext:), (IMP) &newInit, (IMP*) &oldInit);
+	MSHookMessageEx(NSClassFromString(@"IGUser"), @selector(isVerified), (IMP) &newApproved, NULL);
 
 }
 

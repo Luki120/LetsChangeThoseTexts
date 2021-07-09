@@ -1,7 +1,7 @@
 export ARCHS = arm64 arm64e
 export TARGET := iphone:clang:latest:latest
 
-INSTALL_TARGET_PROCESSES = Instagram Preferences
+INSTALL_TARGET_PROCESSES = Instagram
 
 include $(THEOS)/makefiles/common.mk
 
