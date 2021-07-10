@@ -65,6 +65,7 @@
 	textField = [[UITextField alloc] init];
 	textField.translatesAutoresizingMaskIntoConstraints = false;
 	textField.borderStyle = UITextBorderStyleRoundedRect;
+	textField.placeholder = @"Enter Message...";
 	[bottomContainerView addSubview:textField];
 	
 	[textField.leadingAnchor constraintEqualToAnchor:leftButton.trailingAnchor constant:12].active = true;
