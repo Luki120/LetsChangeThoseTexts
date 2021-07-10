@@ -94,6 +94,16 @@
 			</dict>
 			<dict>
 				<key>cell</key>
+				<string>PSLinkCell</string>
+				<key>label</key>
+				<string>Configure Messages</string>
+				<key>detail</key>
+				<string>LCTTMessagesController</string>
+				<key>isController</key>
+				<true/>
+			</dict>
+			<dict>
+				<key>cell</key>
 				<string>PSEditTextCell</string>
 				<key>placeholder</key>
 				<string>Incoming Text</string>

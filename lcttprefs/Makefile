@@ -2,7 +2,7 @@ include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = LCTTPrefs
 
-LCTTPrefs_FILES = LCTTRootListController.m
+LCTTPrefs_FILES = LCTTRootListController.m LCTTMessagesController.m
 LCTTPrefs_CFLAGS = -fobjc-arc
 LCTTPrefs_FRAMEWORKS = UIKit
 LCTTPrefs_PRIVATE_FRAMEWORKS = Preferences
