@@ -30,14 +30,14 @@ static IGUserStore *userStore = NULL;
 static IGUser *me = NULL;
 static IGUser *target = NULL;
 static UIImage *img = NULL;
-static IGDirectPublishedMessage *message = NULL;
+static NSMutableArray<IGDirectPublishedMessage *> *messages = [[NSMutableArray alloc] init];
 
 
 IGDirectPublishedMessage * createMessage(NSString *message, NSString *senderPk){
 	NSString *serverId = [NSString stringWithFormat:@"%d", arc4random_uniform(1000000)];
 	NSString *clientContext = [NSString stringWithFormat:@"%d", arc4random_uniform(1000000)];
 	
-	IGDirectPublishedMessageMetadata *metadata = [[%c(IGDirectPublishedMessageMetadata) alloc] initWithServerTimestamp:NSDate.date serverId:serverId clientContext:clientContext threadId:[NSString stringWithFormat:@"%d", arc4random_uniform(1000000)] senderPk:@"5489216693"];
+	IGDirectPublishedMessageMetadata *metadata = [[%c(IGDirectPublishedMessageMetadata) alloc] initWithServerTimestamp:NSDate.date serverId:serverId clientContext:clientContext threadId:[NSString stringWithFormat:@"%d", arc4random_uniform(1000000)] senderPk:senderPk];
 	IGDirectPublishedMessageContent *content = [%c(IGDirectPublishedMessageContent) textWithString:message mentionedUserPks:@[] mentionedUsers:@[]];
 	return [[%c(IGDirectPublishedMessage) alloc] initWithMetadata:metadata content:content quotedMessage:NULL reactions:@[] forwardMetadata:NULL powerupsMetadata:NULL violationReview:NULL instantReplies:@[] isShhMode:false];
 }
@@ -85,7 +85,15 @@ id newThread(IGDirectUIThread *self, SEL _cmd, id threadKey, id threadId, id vie
 	//Check if the chat is not a group, only has one other memeber and that member is our target
 	if(!metadata.isGroup && metadata.users.count == 1 && metadata.users[0] == target) {
 		//If yes, replace the IGDirectPublishedMessageSet and publishedMessagesInCurrentThreadRange NSOrderedSet the with our own which have the messages we want
-		return oldThread(self, _cmd, threadKey, threadId, viewerId, threadIdV2ForInboxPaging, metadata, visualMessageInfo, [[%c(IGDirectPublishedMessageSet) alloc] initWithSortedMessages:@[message] messagesByServerId:message.metadata.serverId ? @{message.metadata.serverId: message} : @{} messagesByClientContext:message.metadata.clientContext ? @{message.metadata.clientContext: message} : @{}], [NSOrderedSet orderedSetWithArray:@[message]], outgoingMessageSet, threadMessagesRange, messageIslandRange);
+		NSMutableDictionary *messagesByServerId = [[NSMutableDictionary alloc] init];
+		NSMutableDictionary *messagesByClientContext = [[NSMutableDictionary alloc] init];
+		
+		for(IGDirectPublishedMessage *msg in messages){
+			if(msg.metadata.serverId) messagesByServerId[msg.metadata.serverId] = msg;
+			if(msg.metadata.clientContext) messagesByClientContext[msg.metadata.clientContext] = msg;
+		}
+		
+		return oldThread(self, _cmd, threadKey, threadId, viewerId, threadIdV2ForInboxPaging, metadata, visualMessageInfo, [[%c(IGDirectPublishedMessageSet) alloc] initWithSortedMessages:messages messagesByServerId:messagesByServerId messagesByClientContext:messagesByClientContext], [NSOrderedSet orderedSetWithArray:messages], outgoingMessageSet, threadMessagesRange, messageIslandRange);
 	} else {
 		//Otherwise proceed without a change
 		return oldThread(self, _cmd, threadKey, threadId, viewerId, threadIdV2ForInboxPaging, metadata, visualMessageInfo, publishedMessageSet, publishedMessagesInCurrentThreadRange, outgoingMessageSet, threadMessagesRange, messageIslandRange);
@@ -128,7 +136,9 @@ id newObjectStores(id self, SEL _cmd, id mediaStore, id productSaveStatusStore, 
 	
 	if(profilePictureURL && ![profilePictureURL isEqualToString:@""]) img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:profilePictureURL]]];
 	
-	message = createMessage(@"Hi", target.pk);
+	[messages addObject:createMessage(@"Hi", target.pk)];
+	[messages addObject:createMessage(@"How are you doing?", target.pk)];
+	[messages addObject:createMessage(@"I'm fine, what about you?", me.pk)];
 	
 	//Initialize all other hooks
 	MSHookMessageEx(NSClassFromString(@"IGDirectUIThread"), @selector(initWithThreadKey:threadId:viewerId:threadIdV2ForInboxPaging:metadata:visualMessageInfo:publishedMessageSet:publishedMessagesInCurrentThreadRange:outgoingMessageSet:threadMessagesRange:messageIslandRange:), (IMP) &newThread, (IMP*) &oldThread);
