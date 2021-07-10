@@ -30,6 +30,8 @@ static IGUserStore *userStore = NULL;
 static IGUser *me = NULL;
 static IGUser *target = NULL;
 static UIImage *img = NULL;
+
+//List of our custom messages
 static NSMutableArray<IGDirectPublishedMessage *> *messages = [[NSMutableArray alloc] init];
 
 
@@ -84,15 +86,16 @@ id (*oldThread)(IGDirectUIThread *self, SEL _cmd, id threadKey, id threadId, id 
 id newThread(IGDirectUIThread *self, SEL _cmd, id threadKey, id threadId, id viewerId, id threadIdV2ForInboxPaging, IGDirectThreadMetadata *metadata, id visualMessageInfo, id publishedMessageSet, id publishedMessagesInCurrentThreadRange, id outgoingMessageSet, id threadMessagesRange, id messageIslandRange) {
 	//Check if the chat is not a group, only has one other memeber and that member is our target
 	if(!metadata.isGroup && metadata.users.count == 1 && metadata.users[0] == target) {
-		//If yes, replace the IGDirectPublishedMessageSet and publishedMessagesInCurrentThreadRange NSOrderedSet the with our own which have the messages we want
 		NSMutableDictionary *messagesByServerId = [[NSMutableDictionary alloc] init];
 		NSMutableDictionary *messagesByClientContext = [[NSMutableDictionary alloc] init];
 		
+		//Loop through all messages and insert them into the NSDictionaries
 		for(IGDirectPublishedMessage *msg in messages){
 			if(msg.metadata.serverId) messagesByServerId[msg.metadata.serverId] = msg;
 			if(msg.metadata.clientContext) messagesByClientContext[msg.metadata.clientContext] = msg;
 		}
 		
+		//Replace the IGDirectPublishedMessageSet and publishedMessagesInCurrentThreadRange NSOrderedSet the with our own which have the messages we want
 		return oldThread(self, _cmd, threadKey, threadId, viewerId, threadIdV2ForInboxPaging, metadata, visualMessageInfo, [[%c(IGDirectPublishedMessageSet) alloc] initWithSortedMessages:messages messagesByServerId:messagesByServerId messagesByClientContext:messagesByClientContext], [NSOrderedSet orderedSetWithArray:messages], outgoingMessageSet, threadMessagesRange, messageIslandRange);
 	} else {
 		//Otherwise proceed without a change
@@ -135,8 +138,10 @@ id newObjectStores(id self, SEL _cmd, id mediaStore, id productSaveStatusStore, 
 	//If either of the users don't exist, abort
 	if(!me || !target) return;
 	
+	//Load the image from the interwebz
 	if(profilePictureURL && ![profilePictureURL isEqualToString:@""]) img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:profilePictureURL]]];
 	
+	//Add 3 example messages
 	[messages addObject:createMessage(@"Hi", target.pk)];
 	[messages addObject:createMessage(@"How are you doing?", target.pk)];
 	[messages addObject:createMessage(@"I'm fine, what about you?", me.pk)];
