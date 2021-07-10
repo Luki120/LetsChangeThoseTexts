@@ -5,6 +5,10 @@
 //Variables related to preferences
 static BOOL enableTweak = false;
 static NSString *targetUsername = NULL;
+static BOOL spoofVerified = false;
+static NSString *profilePictureURL = NULL;
+static NSString *username = NULL;
+static NSString *fullName = NULL;
 
 static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lcttprefs.plist";
 
@@ -14,14 +18,18 @@ static void loadPrefs() {
 	NSMutableDictionary *prefs = dict ? [dict mutableCopy] : [NSMutableDictionary dictionary];
 
 	enableTweak = prefs[@"enableTweak"] ? [prefs[@"enableTweak"] boolValue] : NO;
-	targetUsername = prefs[@"username"] ? prefs[@"username"] : NULL;
+	targetUsername = prefs[@"targetUsername"] ? prefs[@"targetUsername"] : NULL;
+	spoofVerified = prefs[@"spoofVerified"] ? [prefs[@"spoofVerified"] boolValue] : NO;
+	profilePictureURL = prefs[@"newProfilePictureURL"] ? prefs[@"newProfilePictureURL"] : NULL;
+	username = prefs[@"newUsername"] ? prefs[@"newUsername"] : NULL;
+	fullName = prefs[@"newFullName"] ? prefs[@"newFullName"] : NULL;
 }
 
 //Variables which are evaluated at runtime
 static IGUserStore *userStore = NULL;
 static IGUser *me = NULL;
 static IGUser *target = NULL;
-static UIImage *img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:@"https://cdn.discordapp.com/avatars/521753871673065473/6aac8129e691419a15d1f8c66985eabe.webp"]]];
+static UIImage *img = NULL;
 static IGDirectPublishedMessage *message = NULL;
 
 
@@ -38,8 +46,24 @@ IGDirectPublishedMessage * createMessage(NSString *message, NSString *senderPk){
 BOOL (*oldVerified)(IGUser *self, SEL _cmd);
 
 BOOL newVerified(IGUser *self, SEL _cmd) {
-	if(self == target) return true;
+	if(self == target && spoofVerified) return true;
 	else return oldVerified(self, _cmd);
+}
+
+//Hook the fullName getter of IGUser to return a custom name if it's the target user
+NSString * (*oldFullName)(IGUser *self, SEL _cmd);
+
+NSString * newFullName(IGUser *self, SEL _cmd) {
+	if(self == target && fullName && ![fullName isEqualToString:@""]) return fullName;
+	else return oldFullName(self, _cmd);
+}
+
+//Hook the username getter of IGUser to return a custom name if it's the target user
+NSString * (*oldUsername)(IGUser *self, SEL _cmd);
+
+NSString * newUsername(IGUser *self, SEL _cmd) {
+	if(self == target && username && ![username isEqualToString:@""]) return username;
+	else return oldUsername(self, _cmd);
 }
 
 //Hook the _updateImageViewWithProcessedImage method to replace the image with our custom one
@@ -48,8 +72,8 @@ void (*oldProfilePicture)(IGProfilePictureImageView *self, SEL _cmd);
 void newProfilePicture(IGProfilePictureImageView *self, SEL _cmd) {
 	oldProfilePicture(self, _cmd);
 	
-	//Only swap the profile picture if it's the target user
-	if(self.user == target){
+	//Only swap the profile picture if it's the target user and the profile picture exists
+	if(self.user == target && img){
 		//Set a custom image and let it process (processing applies the rounded corners)
 		[self _setImageFromImage:img shouldProcess:true];
 	}
@@ -102,11 +126,17 @@ id newObjectStores(id self, SEL _cmd, id mediaStore, id productSaveStatusStore, 
 	//If either of the users don't exist, abort
 	if(!me || !target) return;
 	
+	if(profilePictureURL && ![profilePictureURL isEqualToString:@""]) img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:profilePictureURL]]];
+	
 	message = createMessage(@"Hi", target.pk);
 	
 	//Initialize all other hooks
 	MSHookMessageEx(NSClassFromString(@"IGDirectUIThread"), @selector(initWithThreadKey:threadId:viewerId:threadIdV2ForInboxPaging:metadata:visualMessageInfo:publishedMessageSet:publishedMessagesInCurrentThreadRange:outgoingMessageSet:threadMessagesRange:messageIslandRange:), (IMP) &newThread, (IMP*) &oldThread);
-	MSHookMessageEx(NSClassFromString(@"IGUser"), @selector(isVerified), (IMP) &newVerified, (IMP*) &oldVerified);
 	MSHookMessageEx(NSClassFromString(@"IGProfilePictureImageView"), @selector(_updateImageViewWithProcessedImage), (IMP) &newProfilePicture, (IMP*) &oldProfilePicture);
+	
+	//Initiate IGUser hooks
+	MSHookMessageEx(NSClassFromString(@"IGUser"), @selector(isVerified), (IMP) &newVerified, (IMP*) &oldVerified);
+	MSHookMessageEx(NSClassFromString(@"IGUser"), @selector(fullName), (IMP) &newFullName, (IMP*) &oldFullName);
+	MSHookMessageEx(NSClassFromString(@"IGUser"), @selector(username), (IMP) &newUsername, (IMP*) &oldUsername);
 }
 %end

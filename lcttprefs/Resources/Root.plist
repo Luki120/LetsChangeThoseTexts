@@ -25,12 +25,68 @@
 			<dict>
 				<key>cell</key>
 				<string>PSEditTextCell</string>
+				<key>default</key>
+				<string></string>
 				<key>placeholder</key>
 				<string>Username</string>
 				<key>defaults</key>
 				<string>me.luki.runtimeoverflow.lcttprefs</string>
 				<key>key</key>
-				<string>username</string>
+				<string>targetUsername</string>
+			</dict>
+			<dict>
+				<key>cell</key>
+				<string>PSGroupCell</string>
+				<key>label</key>
+				<string>Modifying the Target User</string>
+			</dict>
+			<dict>
+				<key>cell</key>
+				<string>PSSwitchCell</string>
+				<key>default</key>
+				<false/>
+				<key>defaults</key>
+				<string>me.luki.runtimeoverflow.lcttprefs</string>
+				<key>label</key>
+				<string>Spoof Verified</string>
+				<key>key</key>
+				<string>spoofVerified</string>
+			</dict>
+			<dict>
+				<key>cell</key>
+				<string>PSEditTextCell</string>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string>New Profile Picture URL</string>
+				<key>defaults</key>
+				<string>me.luki.runtimeoverflow.lcttprefs</string>
+				<key>key</key>
+				<string>newProfilePictureURL</string>
+			</dict>
+			<dict>
+				<key>cell</key>
+				<string>PSEditTextCell</string>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string>New Username</string>
+				<key>defaults</key>
+				<string>me.luki.runtimeoverflow.lcttprefs</string>
+				<key>key</key>
+				<string>newUsername</string>
+			</dict>
+			<dict>
+				<key>cell</key>
+				<string>PSEditTextCell</string>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string>New Full Name</string>
+				<key>defaults</key>
+				<string>me.luki.runtimeoverflow.lcttprefs</string>
+				<key>key</key>
+				<string>newFullName</string>
 			</dict>
 			<dict>
 				<key>cell</key>
