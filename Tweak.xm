@@ -130,6 +130,7 @@ id newObjectStores(id self, SEL _cmd, id mediaStore, id productSaveStatusStore, 
 	//Obtain the IGUsers for the signed in account and the target user
 	me = [userStore userWithPK:[self.window.userSession pk]];
 	target = [userStore storedUserWithUsername:targetUsername];
+	if(!target) target = [userStore storedUserWithUsername:username];
 	
 	//If either of the users don't exist, abort
 	if(!me || !target) return;
