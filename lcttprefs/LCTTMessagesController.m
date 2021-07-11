@@ -1,16 +1,124 @@
 #import <UIKit/UIKit.h>
 #import <Preferences/PSListController.h>
 
-@interface LCTTMessagesController : PSListController <UITableViewDelegate, UITableViewDataSource> {
+@interface NSUserDefaults ()
+-(void)setObject:(id)arg1 forKey:(id)arg2 inDomain:(id)arg3;
+-(id)objectForKey:(id)arg1 inDomain:(id)arg2;
+@end
+
+@interface LCTTMessagesDelegate : NSObject <UITableViewDelegate, UITableViewDataSource>{
+	UITableView *table;
+}
+
+@property (nonatomic, strong) NSMutableArray<NSDictionary *> *messages;
+
+- (void)addMessage:(NSString *)message byMe:(BOOL)me;
+@end
+
+@interface LCTTMessagesController : PSListController {
 
 	UIView *bottomContainerView;
 	NSLayoutConstraint *bottomContainerViewBottomAnchor;
 	UITextField *textField;
+	LCTTMessagesDelegate *delegate;
+	UITableView *lcttTableView;
 
 }
-@property (nonatomic, strong) UITableView *lcttTableView;
 @end
 
+@implementation LCTTMessagesDelegate
+@synthesize messages;
+
+- (instancetype)initWithTableView:(UITableView *)tableView{
+	self = [super init];
+
+	table = tableView;
+	self.messages = ((NSArray *) [NSUserDefaults.standardUserDefaults objectForKey:@"messages" inDomain:@"LCTTMessages"]).mutableCopy ?: [[NSMutableArray alloc] init];
+
+	return self;
+}
+
+- (void)save{
+	[NSUserDefaults.standardUserDefaults setObject:self.messages forKey:@"messages" inDomain:@"LCTTMessages"];
+}
+
+- (void)addMessage:(NSString *)message byMe:(BOOL)me{
+	[self.messages addObject:@{@"message": message, @"me": [NSNumber numberWithBool:me]}];
+	[table insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.messages.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+	[self save];
+}
+
+- (void)removeMessage:(NSUInteger)index{
+	[self.messages removeObjectAtIndex:index];
+	[table deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+	[self save];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+
+	return 1;
+
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+
+	return self.messages.count;
+
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LCTTCell"];
+	cell.backgroundColor = [UIColor clearColor];
+
+	UIView *bubble = [[UIView alloc] init];
+	bubble.translatesAutoresizingMaskIntoConstraints = false;
+	bubble.backgroundColor = [UIColor systemGrayColor];
+	bubble.clipsToBounds = true;
+	bubble.layer.cornerRadius = 12;
+	[cell addSubview:bubble];
+
+	if(((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue) [bubble.trailingAnchor constraintEqualToAnchor:cell.trailingAnchor constant:-12].active = true;
+	else [bubble.leadingAnchor constraintEqualToAnchor:cell.leadingAnchor constant:12].active = true;
+	[bubble.topAnchor constraintEqualToAnchor:cell.topAnchor constant:2].active = true;
+	[bubble.bottomAnchor constraintEqualToAnchor:cell.bottomAnchor constant:-2].active = true;
+	[bubble.widthAnchor constraintLessThanOrEqualToAnchor:cell.widthAnchor multiplier:0.6].active = true;
+
+	UILabel *text = [[UILabel alloc] init];
+	text.translatesAutoresizingMaskIntoConstraints = false;
+	text.numberOfLines = 0;
+	text.text = [NSString stringWithFormat:@"​%@", self.messages[indexPath.row][@"message"]];
+	[bubble addSubview:text];
+
+	[text.leadingAnchor constraintEqualToAnchor:bubble.leadingAnchor constant:8].active = true;
+	[text.trailingAnchor constraintEqualToAnchor:bubble.trailingAnchor constant:-8].active = true;
+	[text.topAnchor constraintEqualToAnchor:bubble.topAnchor constant:4].active = true;
+	[text.bottomAnchor constraintEqualToAnchor:bubble.bottomAnchor constant:-4].active = true;
+
+	return cell;
+
+}
+
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[tableView deselectRowAtIndexPath:indexPath animated:true];
+}
+
+- (UISwipeActionsConfiguration *)tableView:(UITableView *)tableView trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath{
+	return ((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue ? [UISwipeActionsConfiguration configurationWithActions:@[[UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive title:@"Delete" handler:^(UIContextualAction *action, __kindof UIView *sourceView, void (^completionHandler)(BOOL actionPerformed)){
+		[self removeMessage:indexPath.row];
+		completionHandler(true);
+	}]]] : [UISwipeActionsConfiguration configurationWithActions:@[]];
+}
+
+- (UISwipeActionsConfiguration *)tableView:(UITableView *)tableView leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath{
+	return !((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue ? [UISwipeActionsConfiguration configurationWithActions:@[[UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive title:@"Delete" handler:^(UIContextualAction *action, __kindof UIView *sourceView, void (^completionHandler)(BOOL actionPerformed)){
+		[self removeMessage:indexPath.row];
+		completionHandler(true);
+	}]]] : [UISwipeActionsConfiguration configurationWithActions:@[]];
+}
+@end
 
 @implementation LCTTMessagesController
 
@@ -19,11 +127,18 @@
 	[super viewDidLoad];
 	[[self table] removeFromSuperview];
 
-	self.lcttTableView = [[UITableView alloc] initWithFrame:UIScreen.mainScreen.bounds style:UITableViewStylePlain];
-	self.lcttTableView.backgroundColor = UIColor.systemGray6Color;	
-	self.lcttTableView.dataSource = self;
-	self.lcttTableView.delegate = self;
-	[self.view addSubview:self.lcttTableView];
+	lcttTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+	lcttTableView.translatesAutoresizingMaskIntoConstraints = false;
+	lcttTableView.backgroundColor = UIColor.systemGray6Color;	
+	[self.viewIfLoaded addSubview:lcttTableView];
+
+	delegate = [[LCTTMessagesDelegate alloc] initWithTableView:lcttTableView];
+	lcttTableView.dataSource = delegate;
+	lcttTableView.delegate = delegate;
+
+	[lcttTableView.leadingAnchor constraintEqualToAnchor:self.viewIfLoaded.leadingAnchor].active = true;
+	[lcttTableView.trailingAnchor constraintEqualToAnchor:self.viewIfLoaded.trailingAnchor].active = true;
+	[lcttTableView.topAnchor constraintEqualToAnchor:self.viewIfLoaded.safeAreaLayoutGuide.topAnchor].active = true;
 	
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:NULL];
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:NULL];
@@ -37,6 +152,8 @@
 	[bottomBackgroundView.trailingAnchor constraintEqualToAnchor:self.viewIfLoaded.trailingAnchor].active = true;
 	[bottomBackgroundView.bottomAnchor constraintEqualToAnchor:self.viewIfLoaded.bottomAnchor].active = true;
 	
+	[lcttTableView.bottomAnchor constraintEqualToAnchor:bottomBackgroundView.topAnchor].active = true;
+
 	bottomContainerView = [[UIView alloc] init];
 	bottomContainerView.translatesAutoresizingMaskIntoConstraints = false;
 	[bottomBackgroundView addSubview:bottomContainerView];
@@ -87,49 +204,19 @@
 
 }
 
-/*- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-
-	return 1;
-
-}*/
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-
-	return 5;
-
-}
-
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-	static NSString *CellIdentifier = @"heh";
-	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-
-	if(cell == nil) {
-		
-		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-
-	}
-
-	return cell;
-
-}
-
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-
-
-}
-
 - (void)sendLeft:(UIButton *)button {
 
 	[textField resignFirstResponder];
+	[delegate addMessage:textField.text byMe:false];
+	textField.text = @"";
 
 }
 
 - (void)sendRight:(UIButton *)button {
 
 	[textField resignFirstResponder];
+	[delegate addMessage:textField.text byMe:true];
+	textField.text = @"";
 
 }
 
