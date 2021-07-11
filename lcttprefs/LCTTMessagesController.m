@@ -1,18 +1,29 @@
 #import <UIKit/UIKit.h>
 #import <Preferences/PSListController.h>
 
-@interface LCTTMessagesController : PSListController{
+@interface LCTTMessagesController : PSListController <UITableViewDelegate, UITableViewDataSource> {
+
 	UIView *bottomContainerView;
 	NSLayoutConstraint *bottomContainerViewBottomAnchor;
 	UITextField *textField;
+
 }
+@property (nonatomic, strong) UITableView *lcttTableView;
 @end
 
+
 @implementation LCTTMessagesController
-- (void)viewDidLoad{
+
+- (void)viewDidLoad {
+
 	[super viewDidLoad];
-	
-	[self table].hidden = true;
+	[[self table] removeFromSuperview];
+
+	self.lcttTableView = [[UITableView alloc] initWithFrame:UIScreen.mainScreen.bounds style:UITableViewStylePlain];
+	self.lcttTableView.backgroundColor = UIColor.systemGray6Color;	
+	self.lcttTableView.dataSource = self;
+	self.lcttTableView.delegate = self;
+	[self.view addSubview:self.lcttTableView];
 	
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:NULL];
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:NULL];
@@ -66,33 +77,79 @@
 	textField.translatesAutoresizingMaskIntoConstraints = false;
 	textField.borderStyle = UITextBorderStyleRoundedRect;
 	textField.placeholder = @"Enter Message...";
+	textField.textAlignment = NSTextAlignmentCenter;
 	[bottomContainerView addSubview:textField];
 	
 	[textField.leadingAnchor constraintEqualToAnchor:leftButton.trailingAnchor constant:12].active = true;
 	[textField.trailingAnchor constraintEqualToAnchor:rightButton.leadingAnchor constant:-12].active = true;
-	[textField.topAnchor constraintEqualToAnchor:bottomContainerView.topAnchor constant:18].active = true;
-	[textField.bottomAnchor constraintEqualToAnchor:bottomContainerView.bottomAnchor constant:-18].active = true;
+	[textField.centerXAnchor constraintEqualToAnchor:bottomContainerView.centerXAnchor].active = YES;
+	[textField.centerYAnchor constraintEqualToAnchor:bottomContainerView.centerYAnchor].active = YES;
+
 }
 
-- (void)sendLeft:(UIButton *)button{
+/*- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+
+	return 1;
+
+}*/
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+
+	return 5;
+
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+	static NSString *CellIdentifier = @"heh";
+	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+
+	if(cell == nil) {
+		
+		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+
+	}
+
+	return cell;
+
+}
+
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+
+
+}
+
+- (void)sendLeft:(UIButton *)button {
+
 	[textField resignFirstResponder];
+
 }
 
-- (void)sendRight:(UIButton *)button{
+- (void)sendRight:(UIButton *)button {
+
 	[textField resignFirstResponder];
+
 }
 
-- (void)keyboardWillShow:(NSNotification *)notification{
+- (void)keyboardWillShow:(NSNotification *)notification {
+	
 	bottomContainerViewBottomAnchor.active = false;
 	
 	bottomContainerViewBottomAnchor = [bottomContainerView.bottomAnchor constraintEqualToAnchor:self.viewIfLoaded.bottomAnchor constant:-((NSValue *) notification.userInfo[UIKeyboardFrameEndUserInfoKey]).CGRectValue.size.height];
 	bottomContainerViewBottomAnchor.active = true;
+
 }
 
-- (void)keyboardWillHide:(NSNotification *)notification{
+- (void)keyboardWillHide:(NSNotification *)notification {
+	
 	bottomContainerViewBottomAnchor.active = false;
 	
 	bottomContainerViewBottomAnchor = [bottomContainerView.bottomAnchor constraintEqualToAnchor:self.viewIfLoaded.safeAreaLayoutGuide.bottomAnchor];
 	bottomContainerViewBottomAnchor.active = true;
+
 }
+
+
 @end
