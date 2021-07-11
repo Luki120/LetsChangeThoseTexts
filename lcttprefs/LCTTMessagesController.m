@@ -2,8 +2,8 @@
 #import <Preferences/PSListController.h>
 
 @interface NSUserDefaults ()
--(void)setObject:(id)arg1 forKey:(id)arg2 inDomain:(id)arg3;
--(id)objectForKey:(id)arg1 inDomain:(id)arg2;
+- (void)setObject:(id)arg1 forKey:(id)arg2 inDomain:(id)arg3;
+- (id)objectForKey:(id)arg1 inDomain:(id)arg2;
 @end
 
 @interface LCTTMessagesDelegate : NSObject <UITableViewDelegate, UITableViewDataSource>{
@@ -40,6 +40,8 @@
 
 - (void)save{
 	[NSUserDefaults.standardUserDefaults setObject:self.messages forKey:@"messages" inDomain:@"LCTTMessages"];
+	//[[NSUserDefaults.standardUserDefaults persistentDomainForName:@"LCTTMessages"] writeToFile:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lcttmessages.plist" atomically:YES];
+	[NSUserDefaults.standardUserDefaults synchronize];
 }
 
 - (void)addMessage:(NSString *)message byMe:(BOOL)me{

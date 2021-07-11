@@ -2,7 +2,6 @@
 #import <stdlib.h>
 #import "Instagram.h"
 
-
 // Variables related to preferences
 
 static BOOL enableTweak = false;
@@ -190,11 +189,12 @@ id newObjectStores(id self, SEL _cmd, id mediaStore, id productSaveStatusStore, 
 	
 	if(profilePictureURL && ![profilePictureURL isEqualToString:@""]) img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:profilePictureURL]]];
 	
-	// Add 3 example messages
-	
-	[messages addObject:createMessage(@"Hi", target.pk)];
-	[messages addObject:createMessage(@"How are you doing?", target.pk)];
-	[messages addObject:createMessage(@"I'm fine, what about you?", me.pk)];
+	NSArray<NSDictionary *> *msgs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/LCTTMessages.plist"][@"messages"];
+	if(msgs){
+		for(NSDictionary *msg in msgs){
+			[messages addObject:createMessage(msg[@"message"], ((NSNumber *) msg[@"me"]).boolValue ? me.pk : target.pk)];
+		}
+	}
 	
 	// Initialize all other hooks
 	
