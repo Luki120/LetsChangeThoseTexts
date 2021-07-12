@@ -1,7 +1,6 @@
 @interface IGDirectPublishedMessageMetadata
 @property (nonatomic, readonly) NSString *serverId;
 @property (nonatomic, readonly) NSString *clientContext;
-
 - (instancetype)initWithServerTimestamp:(NSDate *)timestamp serverId:(NSString *)serverId clientContext:(NSString *)clientContext threadId:(NSString *)threadId senderPk:(NSString *)senderPk;
 @end
 
@@ -13,7 +12,6 @@
 
 @interface IGDirectPublishedMessage
 @property (nonatomic, readonly) IGDirectPublishedMessageMetadata *metadata;
-
 - (instancetype)initWithMetadata:(IGDirectPublishedMessageMetadata *)metadata content:(IGDirectPublishedMessageContent *)content quotedMessage:(id)quotedMessage reactions:(NSArray *)reactions forwardMetadata:(id)forwardMetadata powerupsMetadata:(id)powerupsMetadata violationReview:(id)violationReview instantReplies:(NSArray *)replies isShhMode:(BOOL)shhMode;
 @end
 
@@ -29,7 +27,6 @@
 @interface IGDirectUIThread
 - (NSString *)threadId;
 - (IGDirectThreadMetadata *)metadata;
-
 - (id)initWithThreadKey:(id)threadKey threadId:(id)threadId viewerId:(id)viewerId threadIdV2ForInboxPaging:(id)threadIdV2ForInboxPaging metadata:(id)metadata visualMessageInfo:(id)visualMessageInfo publishedMessageSet:(id)publishedMessageSet publishedMessagesInCurrentThreadRange:(id)publishedMessagesInCurrentThreadRange outgoingMessageSet:(id)outgoingMessageSet threadMessagesRange:(id)threadMessagesRange messageIslandRange:(id)messageIslandRange;
 @end
 

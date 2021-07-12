@@ -190,10 +190,15 @@ id newObjectStores(id self, SEL _cmd, id mediaStore, id productSaveStatusStore, 
 	if(profilePictureURL && ![profilePictureURL isEqualToString:@""]) img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:profilePictureURL]]];
 	
 	NSArray<NSDictionary *> *msgs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/LCTTMessages.plist"][@"messages"];
-	if(msgs){
+	
+	if(msgs) {
+		
 		for(NSDictionary *msg in msgs){
+			
 			[messages addObject:createMessage(msg[@"message"], ((NSNumber *) msg[@"me"]).boolValue ? me.pk : target.pk)];
+		
 		}
+	
 	}
 	
 	// Initialize all other hooks
