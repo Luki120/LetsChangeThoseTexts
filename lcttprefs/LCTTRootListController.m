@@ -1,7 +1,4 @@
 #include "LCTTRootListController.h"
-#import <AudioToolbox/AudioServices.h>
-#import <spawn.h>
-
 
 static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lcttprefs.plist";
 
@@ -79,6 +76,47 @@ static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeov
     pid_t pid;
     const char* args[] = {"killall", "Instagram", NULL};
     posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
+
+}
+
+
+- (void)shatterThePrefsToPieces {
+
+	AudioServicesPlaySystemSound(1521);
+
+	UIAlertController* resetAlert = [UIAlertController alertControllerWithTitle:@"LCTT"
+	message:@"Do you want to start fresh?"
+	preferredStyle:UIAlertControllerStyleAlert];
+    
+	UIAlertAction* confirmAction = [UIAlertAction actionWithTitle:@"Shoot" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+
+	NSError *error;
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+        
+	BOOL success = [fileManager removeItemAtPath:@"var/mobile/Library/Preferences/me.luki.runtimeoverflow.lcttprefs.plist" error:&error];
+        
+	if(success) [self killApps];
+        
+	}];
+
+	UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Meh" style:UIAlertActionStyleCancel handler:nil];
+
+	[resetAlert addAction:confirmAction];
+	[resetAlert addAction:cancelAction];
+
+	[self presentViewController:resetAlert animated:YES completion:nil];
+
+
+}
+
+
+- (void)killApps {
+
+	AudioServicesPlaySystemSound(1521);
+
+	pid_t pid;
+	const char* args[] = {"killall", "Preferences", NULL};
+	posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
 
 }
 
