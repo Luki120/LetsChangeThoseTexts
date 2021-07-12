@@ -12,8 +12,6 @@
 	UITableView *table;
 
 }
-@property (nonatomic, strong) UIView *bubble;
-@property (nonatomic, strong) CAGradientLayer *gradient;
 @property (nonatomic, strong) NSMutableArray<NSDictionary *> *messages;
 - (void)addMessage:(NSString *)message byMe:(BOOL)me;
 @end
@@ -83,50 +81,53 @@
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-
-	UIColor *firstColor = [UIColor colorWithRed: 0.48 green: 0.84 blue: 0.96 alpha: 1.00];
-	UIColor *secondColor = [UIColor colorWithRed: 0.47 green: 0.50 blue: 0.96 alpha: 1.00];
     
 	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LCTTCell"];
 	cell.backgroundColor = [UIColor clearColor];
 
-	self.bubble = [[UIView alloc] init];
-	self.bubble.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight; // seems to be useless
-	self.bubble.translatesAutoresizingMaskIntoConstraints = false;
-	self.bubble.backgroundColor = UIColor.clearColor;
-	self.bubble.clipsToBounds = true;
-	self.bubble.layer.cornerRadius = 12;
-	[cell addSubview:self.bubble];
+	UIView *bubble = [[UIView alloc] init];
+	bubble.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight; // seems to be useless
+	bubble.translatesAutoresizingMaskIntoConstraints = false;
+	bubble.backgroundColor = UIColor.clearColor;
+	bubble.clipsToBounds = true;
+	bubble.layer.cornerRadius = 12;
+	[cell addSubview:bubble];
 
-	if(((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue) [self.bubble.trailingAnchor constraintEqualToAnchor:cell.trailingAnchor constant:-12].active = true;
-	else [self.bubble.leadingAnchor constraintEqualToAnchor:cell.leadingAnchor constant:12].active = true;
-	[self.bubble.topAnchor constraintEqualToAnchor:cell.topAnchor constant:2].active = true;
-	[self.bubble.bottomAnchor constraintEqualToAnchor:cell.bottomAnchor constant:-2].active = true;
-	[self.bubble.widthAnchor constraintLessThanOrEqualToAnchor:cell.widthAnchor multiplier:0.6].active = true;
+	if(((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue) [bubble.trailingAnchor constraintEqualToAnchor:cell.trailingAnchor constant:-12].active = true;
+	else [bubble.leadingAnchor constraintEqualToAnchor:cell.leadingAnchor constant:12].active = true;
+	[bubble.topAnchor constraintEqualToAnchor:cell.topAnchor constant:2].active = true;
+	[bubble.bottomAnchor constraintEqualToAnchor:cell.bottomAnchor constant:-2].active = true;
+	[bubble.widthAnchor constraintLessThanOrEqualToAnchor:cell.widthAnchor multiplier:0.6].active = true;
 
 	UILabel *text = [[UILabel alloc] init];
 	text.translatesAutoresizingMaskIntoConstraints = false;
 	text.numberOfLines = 0;
-	text.text = [NSString stringWithFormat:@"​%@", self.messages[indexPath.row][@"message"]];
-	[self.bubble addSubview:text];
+	text.text = self.messages[indexPath.row][@"message"];
+	if(text.text.length <= 0) text.text = @"​";
+	[bubble addSubview:text];
 
-	[text.leadingAnchor constraintEqualToAnchor:self.bubble.leadingAnchor constant:8].active = true;
-	[text.trailingAnchor constraintEqualToAnchor:self.bubble.trailingAnchor constant:-8].active = true;
-	[text.topAnchor constraintEqualToAnchor:self.bubble.topAnchor constant:4].active = true;
-	[text.bottomAnchor constraintEqualToAnchor:self.bubble.bottomAnchor constant:-4].active = true;
-
-	[cell layoutIfNeeded];
-
-	self.gradient = [CAGradientLayer layer];
-	self.gradient.frame = self.bubble.bounds;
-	self.gradient.startPoint = CGPointZero;
-	self.gradient.endPoint = CGPointMake(1, 1);
-	self.gradient.colors = [NSArray arrayWithObjects:(id)firstColor.CGColor, (id)secondColor.CGColor, nil];
-
-	[self.bubble.layer insertSublayer:self.gradient atIndex:0];
+	[text.leadingAnchor constraintEqualToAnchor:bubble.leadingAnchor constant:8].active = true;
+	[text.trailingAnchor constraintEqualToAnchor:bubble.trailingAnchor constant:-8].active = true;
+	[text.topAnchor constraintEqualToAnchor:bubble.topAnchor constant:4].active = true;
+	[text.bottomAnchor constraintEqualToAnchor:bubble.bottomAnchor constant:-4].active = true;
 
 	return cell;
 
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+	UIColor *firstColor = ((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue ? [UIColor colorWithRed: 0.48 green: 0.84 blue: 0.96 alpha: 1.00] : [UIColor colorWithRed: 0.84 green: 0.48 blue: 0.96 alpha: 1.00];
+	UIColor *secondColor = ((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue ? [UIColor colorWithRed: 0.47 green: 0.50 blue: 0.96 alpha: 1.00] : [UIColor colorWithRed: 0.50 green: 0.47 blue: 0.96 alpha: 1.00];
+	
+	[cell layoutIfNeeded];
+
+	CAGradientLayer *gradient = [CAGradientLayer layer];
+	gradient.frame = cell.subviews[0].bounds;
+	gradient.startPoint = CGPointZero;
+	gradient.endPoint = CGPointMake(1, 1);
+	gradient.colors = [NSArray arrayWithObjects:(id)firstColor.CGColor, (id)secondColor.CGColor, nil];
+
+	[cell.subviews[0].layer insertSublayer:gradient atIndex:0];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
