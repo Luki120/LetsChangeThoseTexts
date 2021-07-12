@@ -20,10 +20,9 @@ static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeov
 
 - (instancetype)init {
 
-    self = [super init];
+	self = [super init];
 
-    if (self) {
-
+	if (self) {
 
 		self.killButton = [[UIBarButtonItem alloc] initWithTitle:@"Kill Instagram"
 									style:UIBarButtonItemStylePlain
@@ -32,8 +31,7 @@ static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeov
 		self.killButton.tintColor = [UIColor systemPinkColor];
 		self.navigationItem.rightBarButtonItem = self.killButton;
 
-
-    }
+	}
 
 	return self;
 
@@ -52,30 +50,30 @@ static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeov
 
 - (id)readPreferenceValue:(PSSpecifier*)specifier {
 
-    NSMutableDictionary *settings = [NSMutableDictionary dictionary];
-    [settings addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:prefsKeys]];
-    return (settings[specifier.properties[@"key"]]) ?: specifier.properties[@"default"];
+	NSMutableDictionary *settings = [NSMutableDictionary dictionary];
+	[settings addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:prefsKeys]];
+	return (settings[specifier.properties[@"key"]]) ?: specifier.properties[@"default"];
 
 }
 
 
 - (void)setPreferenceValue:(id)value specifier:(PSSpecifier*)specifier {
 
-    NSMutableDictionary *settings = [NSMutableDictionary dictionary];
-    [settings addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:prefsKeys]];
-    [settings setObject:value forKey:specifier.properties[@"key"]];
-    [settings writeToFile:prefsKeys atomically:YES];
+	NSMutableDictionary *settings = [NSMutableDictionary dictionary];
+	[settings addEntriesFromDictionary:[NSDictionary dictionaryWithContentsOfFile:prefsKeys]];
+	[settings setObject:value forKey:specifier.properties[@"key"]];
+	[settings writeToFile:prefsKeys atomically:YES];
 
 }
 
 
 - (void)killInstagram:(id)sender {
+	
+	AudioServicesPlaySystemSound(1521);
 
-    AudioServicesPlaySystemSound(1521);
-
-    pid_t pid;
-    const char* args[] = {"killall", "Instagram", NULL};
-    posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
+	pid_t pid;
+	const char* args[] = {"killall", "Instagram", NULL};
+	posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
 
 }
 
