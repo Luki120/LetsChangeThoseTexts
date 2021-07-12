@@ -193,7 +193,7 @@ id newObjectStores(id self, SEL _cmd, id mediaStore, id productSaveStatusStore, 
 	
 	if(msgs) {
 		
-		for(NSDictionary *msg in msgs){
+		for(NSDictionary *msg in msgs) {
 			
 			[messages addObject:createMessage(msg[@"message"], ((NSNumber *) msg[@"me"]).boolValue ? me.pk : target.pk)];
 		
