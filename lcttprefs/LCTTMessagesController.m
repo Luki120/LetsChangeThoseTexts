@@ -27,7 +27,6 @@
 	UITableView *lcttTableView;
 
 }
-@property (nonatomic, strong) UIView *bubble;
 @property (nonatomic, strong) UIView *bottomBackgroundView;
 @end
 
