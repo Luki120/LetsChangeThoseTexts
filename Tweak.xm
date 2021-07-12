@@ -10,6 +10,7 @@ static BOOL spoofVerified = false;
 static NSString *profilePictureURL = NULL;
 static NSString *username = NULL;
 static NSString *fullName = NULL;
+static BOOL showSeen = true;
 
 static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lcttprefs.plist";
 
@@ -25,6 +26,7 @@ static void loadPrefs() {
 	profilePictureURL = prefs[@"newProfilePictureURL"] ? prefs[@"newProfilePictureURL"] : NULL;
 	username = prefs[@"newUsername"] ? prefs[@"newUsername"] : NULL;
 	fullName = prefs[@"newFullName"] ? prefs[@"newFullName"] : NULL;
+	showSeen = prefs[@"showSeen"] ? [prefs[@"showSeen"] boolValue] : YES;
 
 }
 
@@ -100,6 +102,19 @@ void newProfilePicture(IGProfilePictureImageView *self, SEL _cmd) {
 		[self _setImageFromImage:img shouldProcess:true];
 	
 	}
+
+}
+
+NSDictionary * (*oldLastSeen)(IGDirectThreadMetadata *self, SEL _cmd);
+
+NSDictionary * newLastSeen(IGDirectThreadMetadata *self, SEL _cmd) {
+	NSDictionary *original = oldLastSeen(self, _cmd);
+
+	if(!showSeen && !self.isGroup && self.users.count == 1 && self.users[0] == target) {
+		NSMutableDictionary *mutableDict = original.mutableCopy;
+		mutableDict[target.pk] = NULL;
+		return mutableDict;
+	} else return original;
 
 }
 
@@ -205,6 +220,7 @@ id newObjectStores(id self, SEL _cmd, id mediaStore, id productSaveStatusStore, 
 	
 	MSHookMessageEx(NSClassFromString(@"IGDirectUIThread"), @selector(initWithThreadKey:threadId:viewerId:threadIdV2ForInboxPaging:metadata:visualMessageInfo:publishedMessageSet:publishedMessagesInCurrentThreadRange:outgoingMessageSet:threadMessagesRange:messageIslandRange:), (IMP) &newThread, (IMP*) &oldThread);
 	MSHookMessageEx(NSClassFromString(@"IGProfilePictureImageView"), @selector(_updateImageViewWithProcessedImage), (IMP) &newProfilePicture, (IMP*) &oldProfilePicture);
+	MSHookMessageEx(NSClassFromString(@"IGDirectThreadMetadata"), @selector(lastSeenMessageIdsForUserIds), (IMP) &newLastSeen, (IMP*) &oldLastSeen);
 	
 	// Initiate IGUser hooks
 	
