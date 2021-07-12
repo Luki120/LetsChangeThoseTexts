@@ -1,17 +1,20 @@
 #import <UIKit/UIKit.h>
 #import <Preferences/PSListController.h>
 
+
 @interface NSUserDefaults ()
 - (void)setObject:(id)arg1 forKey:(id)arg2 inDomain:(id)arg3;
 - (id)objectForKey:(id)arg1 inDomain:(id)arg2;
 @end
 
-@interface LCTTMessagesDelegate : NSObject <UITableViewDelegate, UITableViewDataSource>{
+@interface LCTTMessagesDelegate : NSObject <UITableViewDelegate, UITableViewDataSource> {
+	
 	UITableView *table;
+
 }
-
+@property (nonatomic, strong) UIView *bubble;
+@property (nonatomic, strong) CAGradientLayer *gradient;
 @property (nonatomic, strong) NSMutableArray<NSDictionary *> *messages;
-
 - (void)addMessage:(NSString *)message byMe:(BOOL)me;
 @end
 
@@ -24,36 +27,47 @@
 	UITableView *lcttTableView;
 
 }
+@property (nonatomic, strong) UIView *bubble;
+@property (nonatomic, strong) UIView *bottomBackgroundView;
 @end
 
+
 @implementation LCTTMessagesDelegate
+
 @synthesize messages;
 
-- (instancetype)initWithTableView:(UITableView *)tableView{
+- (instancetype)initWithTableView:(UITableView *)tableView {
+	
 	self = [super init];
 
 	table = tableView;
 	self.messages = ((NSArray *) [NSUserDefaults.standardUserDefaults objectForKey:@"messages" inDomain:@"LCTTMessages"]).mutableCopy ?: [[NSMutableArray alloc] init];
 
 	return self;
+
 }
 
-- (void)save{
+- (void)save {
+	
 	[NSUserDefaults.standardUserDefaults setObject:self.messages forKey:@"messages" inDomain:@"LCTTMessages"];
-	//[[NSUserDefaults.standardUserDefaults persistentDomainForName:@"LCTTMessages"] writeToFile:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lcttmessages.plist" atomically:YES];
 	[NSUserDefaults.standardUserDefaults synchronize];
+
 }
 
-- (void)addMessage:(NSString *)message byMe:(BOOL)me{
+- (void)addMessage:(NSString *)message byMe:(BOOL)me {
+
 	[self.messages addObject:@{@"message": message, @"me": [NSNumber numberWithBool:me]}];
 	[table insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.messages.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
 	[self save];
+
 }
 
-- (void)removeMessage:(NSUInteger)index{
+- (void)removeMessage:(NSUInteger)index {
+	
 	[self.messages removeObjectAtIndex:index];
 	[table deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
 	[self save];
+
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -70,56 +84,76 @@
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+
+	UIColor *firstColor = [UIColor colorWithRed: 0.48 green: 0.84 blue: 0.96 alpha: 1.00];
+	UIColor *secondColor = [UIColor colorWithRed: 0.47 green: 0.50 blue: 0.96 alpha: 1.00];
     
 	UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"LCTTCell"];
 	cell.backgroundColor = [UIColor clearColor];
 
-	UIView *bubble = [[UIView alloc] init];
-	bubble.translatesAutoresizingMaskIntoConstraints = false;
-	bubble.backgroundColor = [UIColor systemGrayColor];
-	bubble.clipsToBounds = true;
-	bubble.layer.cornerRadius = 12;
-	[cell addSubview:bubble];
+	self.bubble = [[UIView alloc] init];
+	self.bubble.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight; // seems to be useless
+	self.bubble.translatesAutoresizingMaskIntoConstraints = false;
+	self.bubble.backgroundColor = UIColor.clearColor;
+	self.bubble.clipsToBounds = true;
+	self.bubble.layer.cornerRadius = 12;
+	[cell addSubview:self.bubble];
 
-	if(((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue) [bubble.trailingAnchor constraintEqualToAnchor:cell.trailingAnchor constant:-12].active = true;
-	else [bubble.leadingAnchor constraintEqualToAnchor:cell.leadingAnchor constant:12].active = true;
-	[bubble.topAnchor constraintEqualToAnchor:cell.topAnchor constant:2].active = true;
-	[bubble.bottomAnchor constraintEqualToAnchor:cell.bottomAnchor constant:-2].active = true;
-	[bubble.widthAnchor constraintLessThanOrEqualToAnchor:cell.widthAnchor multiplier:0.6].active = true;
+	if(((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue) [self.bubble.trailingAnchor constraintEqualToAnchor:cell.trailingAnchor constant:-12].active = true;
+	else [self.bubble.leadingAnchor constraintEqualToAnchor:cell.leadingAnchor constant:12].active = true;
+	[self.bubble.topAnchor constraintEqualToAnchor:cell.topAnchor constant:2].active = true;
+	[self.bubble.bottomAnchor constraintEqualToAnchor:cell.bottomAnchor constant:-2].active = true;
+	[self.bubble.widthAnchor constraintLessThanOrEqualToAnchor:cell.widthAnchor multiplier:0.6].active = true;
 
 	UILabel *text = [[UILabel alloc] init];
 	text.translatesAutoresizingMaskIntoConstraints = false;
 	text.numberOfLines = 0;
 	text.text = [NSString stringWithFormat:@"​%@", self.messages[indexPath.row][@"message"]];
-	[bubble addSubview:text];
+	[self.bubble addSubview:text];
 
-	[text.leadingAnchor constraintEqualToAnchor:bubble.leadingAnchor constant:8].active = true;
-	[text.trailingAnchor constraintEqualToAnchor:bubble.trailingAnchor constant:-8].active = true;
-	[text.topAnchor constraintEqualToAnchor:bubble.topAnchor constant:4].active = true;
-	[text.bottomAnchor constraintEqualToAnchor:bubble.bottomAnchor constant:-4].active = true;
+	[text.leadingAnchor constraintEqualToAnchor:self.bubble.leadingAnchor constant:8].active = true;
+	[text.trailingAnchor constraintEqualToAnchor:self.bubble.trailingAnchor constant:-8].active = true;
+	[text.topAnchor constraintEqualToAnchor:self.bubble.topAnchor constant:4].active = true;
+	[text.bottomAnchor constraintEqualToAnchor:self.bubble.bottomAnchor constant:-4].active = true;
+
+	[cell layoutIfNeeded];
+
+	self.gradient = [CAGradientLayer layer];
+	self.gradient.frame = self.bubble.bounds;
+	self.gradient.startPoint = CGPointZero;
+	self.gradient.endPoint = CGPointMake(1, 1);
+	self.gradient.colors = [NSArray arrayWithObjects:(id)firstColor.CGColor, (id)secondColor.CGColor, nil];
+
+	[self.bubble.layer insertSublayer:self.gradient atIndex:0];
 
 	return cell;
 
 }
 
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	
 	[tableView deselectRowAtIndexPath:indexPath animated:true];
+
 }
 
-- (UISwipeActionsConfiguration *)tableView:(UITableView *)tableView trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath{
-	return ((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue ? [UISwipeActionsConfiguration configurationWithActions:@[[UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive title:@"Delete" handler:^(UIContextualAction *action, __kindof UIView *sourceView, void (^completionHandler)(BOOL actionPerformed)){
+- (UISwipeActionsConfiguration *)tableView:(UITableView *)tableView trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
+	
+	return ((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue ? [UISwipeActionsConfiguration configurationWithActions:@[[UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive title:@"Delete" handler:^(UIContextualAction *action, __kindof UIView *sourceView, void (^completionHandler)(BOOL actionPerformed)) {
 		[self removeMessage:indexPath.row];
 		completionHandler(true);
 	}]]] : [UISwipeActionsConfiguration configurationWithActions:@[]];
+
 }
 
-- (UISwipeActionsConfiguration *)tableView:(UITableView *)tableView leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath{
-	return !((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue ? [UISwipeActionsConfiguration configurationWithActions:@[[UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive title:@"Delete" handler:^(UIContextualAction *action, __kindof UIView *sourceView, void (^completionHandler)(BOOL actionPerformed)){
+- (UISwipeActionsConfiguration *)tableView:(UITableView *)tableView leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
+	
+	return !((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue ? [UISwipeActionsConfiguration configurationWithActions:@[[UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive title:@"Delete" handler:^(UIContextualAction *action, __kindof UIView *sourceView, void (^completionHandler)(BOOL actionPerformed)) {
 		[self removeMessage:indexPath.row];
 		completionHandler(true);
 	}]]] : [UISwipeActionsConfiguration configurationWithActions:@[]];
+
 }
+
 @end
 
 @implementation LCTTMessagesController
@@ -129,40 +163,43 @@
 	[super viewDidLoad];
 	[[self table] removeFromSuperview];
 
+	if(self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) self.view.backgroundColor = UIColor.blackColor;
+	else self.view.backgroundColor = UIColor.whiteColor;
+
 	lcttTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-	lcttTableView.translatesAutoresizingMaskIntoConstraints = false;
-	lcttTableView.backgroundColor = UIColor.systemGray6Color;	
+	lcttTableView.translatesAutoresizingMaskIntoConstraints = NO;	
 	[self.viewIfLoaded addSubview:lcttTableView];
 
 	delegate = [[LCTTMessagesDelegate alloc] initWithTableView:lcttTableView];
 	lcttTableView.dataSource = delegate;
 	lcttTableView.delegate = delegate;
 
-	[lcttTableView.leadingAnchor constraintEqualToAnchor:self.viewIfLoaded.leadingAnchor].active = true;
-	[lcttTableView.trailingAnchor constraintEqualToAnchor:self.viewIfLoaded.trailingAnchor].active = true;
-	[lcttTableView.topAnchor constraintEqualToAnchor:self.viewIfLoaded.safeAreaLayoutGuide.topAnchor].active = true;
+	[lcttTableView.leadingAnchor constraintEqualToAnchor:self.viewIfLoaded.leadingAnchor].active = YES;
+	[lcttTableView.trailingAnchor constraintEqualToAnchor:self.viewIfLoaded.trailingAnchor].active = YES;
+	[lcttTableView.topAnchor constraintEqualToAnchor:self.viewIfLoaded.safeAreaLayoutGuide.topAnchor].active = YES;
 	
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:NULL];
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:NULL];
 	
-	UIView *bottomBackgroundView = [[UIView alloc] init];
-	bottomBackgroundView.translatesAutoresizingMaskIntoConstraints = false;
-	bottomBackgroundView.backgroundColor = UIColor.systemGray6Color;
-	[self.viewIfLoaded addSubview:bottomBackgroundView];
+	self.bottomBackgroundView = [[UIView alloc] init];
+	self.bottomBackgroundView.translatesAutoresizingMaskIntoConstraints = false;
+	if(self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) self.bottomBackgroundView.backgroundColor = UIColor.blackColor;
+	else self.bottomBackgroundView.backgroundColor = UIColor.whiteColor;
+	[self.viewIfLoaded addSubview:self.bottomBackgroundView];
 	
-	[bottomBackgroundView.leadingAnchor constraintEqualToAnchor:self.viewIfLoaded.leadingAnchor].active = true;
-	[bottomBackgroundView.trailingAnchor constraintEqualToAnchor:self.viewIfLoaded.trailingAnchor].active = true;
-	[bottomBackgroundView.bottomAnchor constraintEqualToAnchor:self.viewIfLoaded.bottomAnchor].active = true;
+	[self.bottomBackgroundView.leadingAnchor constraintEqualToAnchor:self.viewIfLoaded.leadingAnchor].active = true;
+	[self.bottomBackgroundView.trailingAnchor constraintEqualToAnchor:self.viewIfLoaded.trailingAnchor].active = true;
+	[self.bottomBackgroundView.bottomAnchor constraintEqualToAnchor:self.viewIfLoaded.bottomAnchor].active = true;
 	
-	[lcttTableView.bottomAnchor constraintEqualToAnchor:bottomBackgroundView.topAnchor].active = true;
+	[lcttTableView.bottomAnchor constraintEqualToAnchor:self.bottomBackgroundView.topAnchor].active = YES;
 
 	bottomContainerView = [[UIView alloc] init];
 	bottomContainerView.translatesAutoresizingMaskIntoConstraints = false;
-	[bottomBackgroundView addSubview:bottomContainerView];
+	[self.bottomBackgroundView addSubview:bottomContainerView];
 	
-	[bottomContainerView.leadingAnchor constraintEqualToAnchor:bottomBackgroundView.leadingAnchor].active = true;
-	[bottomContainerView.trailingAnchor constraintEqualToAnchor:bottomBackgroundView.trailingAnchor].active = true;
-	[bottomContainerView.topAnchor constraintEqualToAnchor:bottomBackgroundView.topAnchor].active = true;
+	[bottomContainerView.leadingAnchor constraintEqualToAnchor:self.bottomBackgroundView.leadingAnchor].active = true;
+	[bottomContainerView.trailingAnchor constraintEqualToAnchor:self.bottomBackgroundView.trailingAnchor].active = true;
+	[bottomContainerView.topAnchor constraintEqualToAnchor:self.bottomBackgroundView.topAnchor].active = true;
 	[bottomContainerView.heightAnchor constraintEqualToConstant:64].active = true;
 	
 	bottomContainerViewBottomAnchor = [bottomContainerView.bottomAnchor constraintEqualToAnchor:self.viewIfLoaded.safeAreaLayoutGuide.bottomAnchor];
@@ -203,6 +240,25 @@
 	[textField.trailingAnchor constraintEqualToAnchor:rightButton.leadingAnchor constant:-12].active = true;
 	[textField.centerXAnchor constraintEqualToAnchor:bottomContainerView.centerXAnchor].active = YES;
 	[textField.centerYAnchor constraintEqualToAnchor:bottomContainerView.centerYAnchor].active = YES;
+
+
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+
+	if(self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+
+		self.view.backgroundColor = UIColor.blackColor;
+		self.bottomBackgroundView.backgroundColor = UIColor.blackColor;
+
+	}
+
+	else {
+
+		self.view.backgroundColor = UIColor.whiteColor;
+		self.bottomBackgroundView.backgroundColor = UIColor.whiteColor;
+	
+	}
 
 }
 
