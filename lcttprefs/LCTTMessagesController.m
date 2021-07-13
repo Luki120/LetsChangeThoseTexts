@@ -115,7 +115,8 @@
 
 }
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+	
 	UIColor *firstColor = ((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue ? [UIColor colorWithRed: 0.48 green: 0.84 blue: 0.96 alpha: 1.00] : [UIColor colorWithRed: 0.84 green: 0.48 blue: 0.96 alpha: 1.00];
 	UIColor *secondColor = ((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue ? [UIColor colorWithRed: 0.47 green: 0.50 blue: 0.96 alpha: 1.00] : [UIColor colorWithRed: 0.50 green: 0.47 blue: 0.96 alpha: 1.00];
 	
@@ -128,6 +129,7 @@
 	gradient.colors = [NSArray arrayWithObjects:(id)firstColor.CGColor, (id)secondColor.CGColor, nil];
 
 	[cell.subviews[0].layer insertSublayer:gradient atIndex:0];
+
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
