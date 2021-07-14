@@ -15,6 +15,10 @@
 - (instancetype)initWithMetadata:(IGDirectPublishedMessageMetadata *)metadata content:(IGDirectPublishedMessageContent *)content quotedMessage:(id)quotedMessage reactions:(NSArray *)reactions forwardMetadata:(id)forwardMetadata powerupsMetadata:(id)powerupsMetadata violationReview:(id)violationReview instantReplies:(NSArray *)replies isShhMode:(BOOL)shhMode;
 @end
 
+@interface IGDirectLastSeenMessageInfo
+- (instancetype)initWithMessageId:(NSString *)messageId seenAtTimestamp:(NSDate *)timestamp shhMessageSeenInfo:(id)info;
+@end
+
 @interface IGUser
 @property (atomic, copy, readwrite) NSString *pk;
 @end

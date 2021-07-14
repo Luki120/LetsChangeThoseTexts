@@ -110,9 +110,10 @@ NSDictionary * (*oldLastSeen)(IGDirectThreadMetadata *self, SEL _cmd);
 NSDictionary * newLastSeen(IGDirectThreadMetadata *self, SEL _cmd) {
 	NSDictionary *original = oldLastSeen(self, _cmd);
 
-	if(!showSeen && !self.isGroup && self.users.count == 1 && self.users[0] == target) {
+	if(!self.isGroup && self.users.count == 1 && self.users[0] == target) {
 		NSMutableDictionary *mutableDict = original.mutableCopy;
-		mutableDict[target.pk] = NULL;
+		if(showSeen && messages.count > 0) mutableDict[target.pk] = [[%c(IGDirectLastSeenMessageInfo) alloc] initWithMessageId:messages[messages.count - 1].metadata.serverId seenAtTimestamp:NSDate.date shhMessageSeenInfo:NULL];
+		else mutableDict[target.pk] = NULL;
 		return mutableDict;
 	} else return original;
 
