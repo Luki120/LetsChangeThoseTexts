@@ -108,6 +108,7 @@ void newProfilePicture(IGProfilePictureImageView *self, SEL _cmd) {
 NSDictionary * (*oldLastSeen)(IGDirectThreadMetadata *self, SEL _cmd);
 
 NSDictionary * newLastSeen(IGDirectThreadMetadata *self, SEL _cmd) {
+	
 	NSDictionary *original = oldLastSeen(self, _cmd);
 
 	if(!self.isGroup && self.users.count == 1 && self.users[0] == target) {
@@ -115,6 +116,7 @@ NSDictionary * newLastSeen(IGDirectThreadMetadata *self, SEL _cmd) {
 		if(showSeen && messages.count > 0) mutableDict[target.pk] = [[%c(IGDirectLastSeenMessageInfo) alloc] initWithMessageId:messages[messages.count - 1].metadata.serverId seenAtTimestamp:NSDate.date shhMessageSeenInfo:NULL];
 		else mutableDict[target.pk] = NULL;
 		return mutableDict;
+	
 	} else return original;
 
 }
@@ -172,6 +174,7 @@ id newObjectStores(id self, SEL _cmd, id mediaStore, id productSaveStatusStore, 
 - (void)application:(id)app didFinishLaunchingWithOptions:(id)options {
 
 	// Load tweak preferences
+
 	loadPrefs();
 	
 	// Disable the tweak if not enabled or there's no target username
