@@ -5,4 +5,5 @@ include $(THEOS)/makefiles/common.mk
 
 SUBPROJECTS += Preferences
 SUBPROJECTS += Instagram
+SUBPROJECTS += Twitter
 include $(THEOS_MAKE_PATH)/aggregate.mk

@@ -92,16 +92,6 @@
 			</dict>
 			<dict>
 				<key>cell</key>
-				<string>PSSwitchCell</string>
-				<key>default</key>
-				<true/>
-				<key>label</key>
-				<string>Show Seen</string>
-				<key>key</key>
-				<string>showSeen</string>
-			</dict>
-			<dict>
-				<key>cell</key>
 				<string>PSGroupCell</string>
 			</dict>
 			<dict>
@@ -114,6 +104,6 @@
 			</dict>
 		</array>
 		<key>title</key>
-		<string>LCTT - Instagram</string>
+		<string>LCTT - Twitter</string>
 	</dict>
 </plist>

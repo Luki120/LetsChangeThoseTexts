@@ -42,7 +42,7 @@ static UIImage *img = NULL;
 static NSMutableArray<IGDirectPublishedMessage *> *messages = [[NSMutableArray alloc] init];
 
 
-IGDirectPublishedMessage * createMessage(NSString *message, NSString *senderPk){
+static IGDirectPublishedMessage * createMessage(NSString *message, NSString *senderPk){
 
 	NSString *serverId = [NSString stringWithFormat:@"%d", arc4random_uniform(1000000)];
 	NSString *clientContext = [NSString stringWithFormat:@"%d", arc4random_uniform(1000000)];
@@ -59,7 +59,7 @@ BOOL (*oldVerified)(IGUser *self, SEL _cmd);
 
 BOOL newVerified(IGUser *self, SEL _cmd) {
 
-	if(self == target && spoofVerified) return true;
+	if(self == target) return spoofVerified;
 	else return oldVerified(self, _cmd);
 
 }
