@@ -1,15 +1,10 @@
-export ARCHS = arm64 arm64e
-export TARGET := iphone:clang:latest:latest
-
-INSTALL_TARGET_PROCESSES = Instagram Preferences # Placeholder so I can kill the settings app and test smh, don't delete
+export INSTALL_TARGET_PROCESSES += Instagram
 
 include $(THEOS)/makefiles/common.mk
 
-TWEAK_NAME = LetsChangeThoseTexts
+TWEAK_NAME = LCTTInstagram
 
-LetsChangeThoseTexts_FILES = Tweak.xm
-LetsChangeThoseTexts_CFLAGS = -fobjc-arc
+LCTTInstagram_FILES = Tweak.xm
+LCTTInstagram_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk
-SUBPROJECTS += lcttprefs
-include $(THEOS_MAKE_PATH)/aggregate.mk

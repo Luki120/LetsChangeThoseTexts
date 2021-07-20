@@ -5,8 +5,9 @@
 #import <spawn.h>
 
 
-@interface LCTTRootListController : PSListController
-@property (nonatomic, retain) UIBarButtonItem *killButton;
+@interface LCTTApplicationListController : PSListController {
+    NSString *application;
+}
+
 - (void)shatterThePrefsToPieces;
-- (void)killApps;
 @end

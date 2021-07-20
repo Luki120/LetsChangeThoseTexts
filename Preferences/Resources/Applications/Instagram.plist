@@ -9,8 +9,6 @@
 				<string>PSSwitchCell</string>
 				<key>default</key>
 				<false/>
-				<key>defaults</key>
-				<string>me.luki.runtimeoverflow.lcttprefs</string>
 				<key>key</key>
 				<string>enableTweak</string>
 				<key>label</key>
@@ -29,8 +27,6 @@
 				<string></string>
 				<key>placeholder</key>
 				<string>Username</string>
-				<key>defaults</key>
-				<string>me.luki.runtimeoverflow.lcttprefs</string>
 				<key>key</key>
 				<string>targetUsername</string>
 			</dict>
@@ -45,8 +41,6 @@
 				<string>PSSwitchCell</string>
 				<key>default</key>
 				<false/>
-				<key>defaults</key>
-				<string>me.luki.runtimeoverflow.lcttprefs</string>
 				<key>label</key>
 				<string>Spoof Verified</string>
 				<key>key</key>
@@ -59,8 +53,6 @@
 				<string></string>
 				<key>placeholder</key>
 				<string>New Profile Picture URL</string>
-				<key>defaults</key>
-				<string>me.luki.runtimeoverflow.lcttprefs</string>
 				<key>key</key>
 				<string>newProfilePictureURL</string>
 			</dict>
@@ -71,8 +63,6 @@
 				<string></string>
 				<key>placeholder</key>
 				<string>New Username</string>
-				<key>defaults</key>
-				<string>me.luki.runtimeoverflow.lcttprefs</string>
 				<key>key</key>
 				<string>newUsername</string>
 			</dict>
@@ -83,8 +73,6 @@
 				<string></string>
 				<key>placeholder</key>
 				<string>New Full Name</string>
-				<key>defaults</key>
-				<string>me.luki.runtimeoverflow.lcttprefs</string>
 				<key>key</key>
 				<string>newFullName</string>
 			</dict>
@@ -107,8 +95,6 @@
 				<string>PSSwitchCell</string>
 				<key>default</key>
 				<true/>
-				<key>defaults</key>
-				<string>me.luki.runtimeoverflow.lcttprefs</string>
 				<key>label</key>
 				<string>Show Seen</string>
 				<key>key</key>

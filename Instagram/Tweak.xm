@@ -12,7 +12,7 @@ static NSString *username = NULL;
 static NSString *fullName = NULL;
 static BOOL showSeen = true;
 
-static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lcttprefs.plist";
+static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lcttinstagram.plist";
 
 
 static void loadPrefs() {

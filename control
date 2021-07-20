@@ -1,0 +1,9 @@
+Package: me.luki.runtimeoverflow.lctt
+Name: LetsChangeThoseTexts
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: An awesome MobileSubstrate tweak!
+Maintainer: RuntimeOverflow & Luki
+Author: RuntimeOverflow & Luki
+Section: Tweaks
+Depends: mobilesubstrate (>= 0.9.5000)
