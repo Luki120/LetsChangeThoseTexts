@@ -36,7 +36,7 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 	if(!self.isSelfConversation && self.participantsExcludingPerspectivalUser.count == 1 && self.participantsExcludingPerspectivalUser[0].participatingUser.userID == targetUserID) {
 		NSMutableArray<TFNDirectMessageEntry *> *messages = [NSMutableArray array];
 		NSArray<NSDictionary *> *msgs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/LCTTMessages.plist"][@"messages"];
-	
+
 		if(msgs) {
 			for(NSDictionary *msg in msgs) {
 				[messages addObject:createMessage(msg[@"message"], ((NSNumber *) msg[@"me"]).boolValue ? self.perspectivalParticipant.participatingUser : self.participantsExcludingPerspectivalUser[0].participatingUser)];
@@ -51,7 +51,7 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 %hook TFNDirectMessageUser
 - (void)setDirectMessageUser:(TFSDirectMessageUser *)user{
 	%orig;
-	
+
 	if([user.username isEqualToString:targetUsername]) targetUserID = user.userID;
 }
 
@@ -76,13 +76,13 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 	id media = %orig;
 
 	if(self.userID == targetUserID && profilePictureURL && ![profilePictureURL isEqualToString:@""]) MSHookIvar<NSString *>(media, "_mediaURL") = profilePictureURL;
-	
+
 	return media;
 }
 %end
 
 %ctor{
 	loadPrefs();
-	
+
 	if(enableTweak && targetUsername && targetUsername.length > 0) %init;
 }
