@@ -38,9 +38,12 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 		NSMutableArray<TFNDirectMessageEntry *> *messages = [NSMutableArray array];
 		NSArray<NSDictionary *> *msgs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/LCTTMessages.plist"][@"messages"];
 
-		if(msgs) {
-			for(NSDictionary *msg in msgs) {
-				[messages addObject:createMessage(msg[@"message"], ((NSNumber *) msg[@"me"]).boolValue ? self.perspectivalParticipant.participatingUser : self.participantsExcludingPerspectivalUser[0].participatingUser)];
+			NSArray<NSDictionary *> *msgs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctttwittermessages.plist"][@"messages"];
+
+			if(msgs) {
+				for(NSDictionary *msg in msgs) {
+					[messages addObject:createMessage(msg[@"message"], ((NSNumber *) msg[@"me"]).boolValue ? self.perspectivalParticipant.participatingUser : self.participantsExcludingPerspectivalUser[0].participatingUser)];
+				}
 			}
 		}
 

@@ -1,4 +1,5 @@
 #include "LCTTApplicationListController.h"
+#import "LCTTMessagesController.h"
 
 
 @implementation LCTTApplicationListController
@@ -8,6 +9,8 @@
 	if (!_specifiers) {
 
 		_specifiers = [self loadSpecifiersFromPlistName:[NSString stringWithFormat:@"Applications/%@", application] target:self];
+
+		for(PSSpecifier *specifier in _specifiers) if(specifier.detailControllerClass == LCTTMessagesController.class) [specifier setProperty:application forKey:@"Application"];
 
 	}
 
@@ -80,14 +83,14 @@
 
 	UIAlertAction* confirmAction = [UIAlertAction actionWithTitle:@"Shoot" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
 
-		NSError *error;
-		NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+			
+		[fileManager removeItemAtPath:[NSString stringWithFormat:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctt%@.plist", application.lowercaseString] error:NULL];
+		[NSUserDefaults.standardUserDefaults removePersistentDomainForName:[NSString stringWithFormat:@"me.luki.runtimeoverflow.lctt%@messages", application.lowercaseString]];
+		[NSUserDefaults.standardUserDefaults synchronize];
 
-		BOOL success = [fileManager removeItemAtPath:[NSString stringWithFormat:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctt%@.plist", application.lowercaseString] error:&error];
-		BOOL successTwo = [fileManager removeItemAtPath:[NSString stringWithFormat:@"/var/mobile/Library/Preferences/LCTTMessages.plist"] error:&error];
-
-		if((success) || (successTwo)) [self blurEffect];
-
+		[self.navigationController popViewControllerAnimated:true];
+    
 	}];
 
 	UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Meh" style:UIAlertActionStyleCancel handler:nil];
@@ -99,8 +102,6 @@
 
 
 }
-
-
 
 - (void)blurEffect {
 
