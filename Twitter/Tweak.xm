@@ -24,26 +24,44 @@ static void loadPrefs() {
 }
 
 static NSInteger targetUserID = -1;
+static NSMutableArray<TFNDirectMessageEntry *> *messages = NULL;
 
 static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 	TFNDirectMessageConversationEntryCanonicalIdentifier *identifier = [[%c(TFNDirectMessageConversationEntryCanonicalIdentifier) alloc] initWithCanonicalID:arc4random_uniform(1000000)];
 
-	return [[%c(TFNDirectMessageEntry) alloc] initWithIdentifier:identifier sender:sender text:message entities:@[] attachment:NULL quickReplyRequest:NULL customProfile:NULL markedAsSpam:false markedAsAbuse:false time:NSDate.date ctas:NULL];
+	return [[%c(TFNDirectMessageEntry) alloc] initWithIdentifier:identifier sender:sender text:message entities:NULL attachment:NULL quickReplyRequest:NULL customProfile:NULL markedAsSpam:false markedAsAbuse:false time:NSDate.date ctas:NULL];
 }
 
-%hook T1DirectMessageConversation
+%hook TFNDirectMessageConversation
 - (NSArray<TFNDirectMessageEntry *> *)allEntries {
 	if(!self.isSelfConversation && self.participantsExcludingPerspectivalUser.count == 1 && self.participantsExcludingPerspectivalUser[0].participatingUser.userID == targetUserID) {
-		NSMutableArray<TFNDirectMessageEntry *> *messages = [NSMutableArray array];
-		NSArray<NSDictionary *> *msgs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/LCTTMessages.plist"][@"messages"];
-	
-		if(msgs) {
-			for(NSDictionary *msg in msgs) {
-				[messages addObject:createMessage(msg[@"message"], ((NSNumber *) msg[@"me"]).boolValue ? self.perspectivalParticipant.participatingUser : self.participantsExcludingPerspectivalUser[0].participatingUser)];
+		if(!messages){
+			messages = [NSMutableArray array];
+
+			NSArray<NSDictionary *> *msgs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/LCTTMessages.plist"][@"messages"];
+
+			if(msgs) {
+				for(NSDictionary *msg in msgs) {
+					[messages addObject:createMessage(msg[@"message"], ((NSNumber *) msg[@"me"]).boolValue ? self.perspectivalParticipant.participatingUser : self.participantsExcludingPerspectivalUser[0].participatingUser)];
+				}
 			}
 		}
 
 		return messages;
+	} else return %orig;
+}
+
+- (NSMutableArray<TFNDirectMessageEntry *> *)entryList{
+	if(!self.isSelfConversation && self.participantsExcludingPerspectivalUser.count == 1 && self.participantsExcludingPerspectivalUser[0].participatingUser.userID == targetUserID) {
+		return [self allEntries].mutableCopy;
+	} else return %orig;
+}
+
+- (TFNDirectMessageEntry *)latestEntry{
+	if(!self.isSelfConversation && self.participantsExcludingPerspectivalUser.count == 1 && self.participantsExcludingPerspectivalUser[0].participatingUser.userID == targetUserID) {
+		NSArray<TFNDirectMessageEntry *> *messages = [self allEntries];
+		if(messages.count > 0) return messages[messages.count - 1];
+		else return NULL;
 	} else return %orig;
 }
 %end

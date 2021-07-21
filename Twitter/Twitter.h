@@ -3,6 +3,8 @@
 @end
 
 @interface TFNDirectMessageEntry : NSObject
+@property (nonatomic, assign, readonly) NSInteger messageID;
+
 - (instancetype)initWithIdentifier:(id)identifier sender:(id)sender text:(id)text entities:(id)entities attachment:(id)attachment quickReplyRequest:(id)quickReplyRequest customProfile:(id)customProfile markedAsSpam:(BOOL)markedAsSpam markedAsAbuse:(BOOL)markedAsAbuse time:(id)time ctas:(id)ctas;
 @end
 
@@ -25,4 +27,9 @@
 @property (nonatomic, assign, readonly) NSArray<TFNDirectMessageConversationParticipant *> *participantsExcludingPerspectivalUser;
 @property (nonatomic, assign, readonly) TFNDirectMessageConversationParticipant *perspectivalParticipant;
 @property (nonatomic, assign, readonly) BOOL isSelfConversation;
+
+- (NSArray<TFNDirectMessageEntry *> *)allEntries;
+@end
+
+@interface TFNDirectMessageConversation : T1DirectMessageConversation //Bad practises go brrr, but what can you do when you're lazy
 @end
