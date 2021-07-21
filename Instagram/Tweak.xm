@@ -208,7 +208,7 @@ id newObjectStores(id self, SEL _cmd, id mediaStore, id productSaveStatusStore, 
 	
 	if(profilePictureURL && ![profilePictureURL isEqualToString:@""]) img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:profilePictureURL]]];
 	
-	NSArray<NSDictionary *> *msgs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/LCTTMessages.plist"][@"messages"];
+	NSArray<NSDictionary *> *msgs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lcttinstagrammessages.plist"][@"messages"];
 	
 	if(msgs) {
 		

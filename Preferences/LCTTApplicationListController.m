@@ -1,4 +1,5 @@
 #include "LCTTApplicationListController.h"
+#import "LCTTMessagesController.h"
 
 
 @implementation LCTTApplicationListController
@@ -8,7 +9,8 @@
 	if (!_specifiers) {
 
 		_specifiers = [self loadSpecifiersFromPlistName:[NSString stringWithFormat:@"Applications/%@", application] target:self];
-	
+		for(PSSpecifier *specifier in _specifiers) if(specifier.detailControllerClass == LCTTMessagesController.class) [specifier setProperty:application forKey:@"Application"];
+
 	}
 
 	return _specifiers;
@@ -78,12 +80,13 @@
     
 	UIAlertAction* confirmAction = [UIAlertAction actionWithTitle:@"Shoot" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
 
-	NSError *error;
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-        
-	BOOL success = [fileManager removeItemAtPath:[NSString stringWithFormat:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctt%@.plist", application.lowercaseString] error:&error];
-        
-	if(success) [self killApps];
+		NSFileManager *fileManager = [NSFileManager defaultManager];
+			
+		[fileManager removeItemAtPath:[NSString stringWithFormat:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctt%@.plist", application.lowercaseString] error:NULL];
+		[NSUserDefaults.standardUserDefaults removePersistentDomainForName:[NSString stringWithFormat:@"me.luki.runtimeoverflow.lctt%@messages", application.lowercaseString]];
+		[NSUserDefaults.standardUserDefaults synchronize];
+
+		[self.navigationController popViewControllerAnimated:true];
         
 	}];
 
@@ -94,17 +97,6 @@
 
 	[self presentViewController:resetAlert animated:YES completion:nil];
 
-
-}
-
-
-- (void)killApps {
-
-	AudioServicesPlaySystemSound(1521);
-
-	pid_t pid;
-	const char* args[] = {"killall", "Preferences", NULL};
-	posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
 
 }
 

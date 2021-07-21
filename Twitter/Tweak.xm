@@ -38,7 +38,7 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 		if(!messages){
 			messages = [NSMutableArray array];
 
-			NSArray<NSDictionary *> *msgs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/LCTTMessages.plist"][@"messages"];
+			NSArray<NSDictionary *> *msgs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctttwittermessages.plist"][@"messages"];
 
 			if(msgs) {
 				for(NSDictionary *msg in msgs) {
@@ -101,6 +101,6 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 
 %ctor{
 	loadPrefs();
-	
+
 	if(enableTweak && targetUsername && targetUsername.length > 0) %init;
 }

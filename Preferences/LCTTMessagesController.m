@@ -1,44 +1,17 @@
-#import <UIKit/UIKit.h>
-#import <Preferences/PSListController.h>
-
-
-@interface NSUserDefaults ()
-- (void)setObject:(id)arg1 forKey:(id)arg2 inDomain:(id)arg3;
-- (id)objectForKey:(id)arg1 inDomain:(id)arg2;
-@end
-
-@interface LCTTMessagesDelegate : NSObject <UITableViewDelegate, UITableViewDataSource> {
-	
-	UITableView *table;
-
-}
-@property (nonatomic, strong) NSMutableArray<NSDictionary *> *messages;
-- (void)addMessage:(NSString *)message byMe:(BOOL)me;
-@end
-
-@interface LCTTMessagesController : PSListController {
-
-	UIView *bottomContainerView;
-	NSLayoutConstraint *bottomContainerViewBottomAnchor;
-	UITextField *textField;
-	LCTTMessagesDelegate *delegate;
-	UITableView *lcttTableView;
-
-}
-@property (nonatomic, strong) UIView *bottomBackgroundView;
-@end
+#import "LCTTMessagesController.h"
 
 
 @implementation LCTTMessagesDelegate
 
 @synthesize messages;
 
-- (instancetype)initWithTableView:(UITableView *)tableView {
+- (instancetype)initWithTableView:(UITableView *)tableView forApplication:(NSString *)app {
 	
 	self = [super init];
 
+	application = app;
 	table = tableView;
-	self.messages = ((NSArray *) [NSUserDefaults.standardUserDefaults objectForKey:@"messages" inDomain:@"LCTTMessages"]).mutableCopy ?: [[NSMutableArray alloc] init];
+	self.messages = ((NSArray *) [NSUserDefaults.standardUserDefaults objectForKey:@"messages" inDomain:[NSString stringWithFormat:@"me.luki.runtimeoverflow.lctt%@messages", application.lowercaseString]]).mutableCopy ?: [[NSMutableArray alloc] init];
 
 	return self;
 
@@ -46,7 +19,7 @@
 
 - (void)save {
 	
-	[NSUserDefaults.standardUserDefaults setObject:self.messages forKey:@"messages" inDomain:@"LCTTMessages"];
+	[NSUserDefaults.standardUserDefaults setObject:self.messages forKey:@"messages" inDomain:[NSString stringWithFormat:@"me.luki.runtimeoverflow.lctt%@messages", application.lowercaseString]];
 	[NSUserDefaults.standardUserDefaults synchronize];
 
 }
@@ -160,6 +133,12 @@
 
 @implementation LCTTMessagesController
 
+-(void)setSpecifier:(PSSpecifier*)specifier {
+	[super setSpecifier:specifier];
+
+	application = [specifier propertyForKey:@"Application"];
+}
+
 - (void)viewDidLoad {
 
 	[super viewDidLoad];
@@ -172,7 +151,7 @@
 	lcttTableView.translatesAutoresizingMaskIntoConstraints = NO;	
 	[self.viewIfLoaded addSubview:lcttTableView];
 
-	delegate = [[LCTTMessagesDelegate alloc] initWithTableView:lcttTableView];
+	delegate = [[LCTTMessagesDelegate alloc] initWithTableView:lcttTableView forApplication:application];
 	lcttTableView.dataSource = delegate;
 	lcttTableView.delegate = delegate;
 
