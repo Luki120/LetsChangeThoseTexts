@@ -8,7 +8,7 @@
 	if (!_specifiers) {
 
 		_specifiers = [self loadSpecifiersFromPlistName:[NSString stringWithFormat:@"Applications/%@", application] target:self];
-	
+
 	}
 
 	return _specifiers;
@@ -16,9 +16,11 @@
 }
 
 -(void)setSpecifier:(PSSpecifier*)specifier {
+
 	[super setSpecifier:specifier];
 
 	application = [specifier propertyForKey:@"Application"];
+
 }
 
 
@@ -33,7 +35,7 @@
 									style:UIBarButtonItemStylePlain
 									target:self
 									action:@selector(kill:)];
-	killButton.tintColor = [UIColor systemPinkColor];
+	killButton.tintColor = [UIColor colorWithRed: 0.84 green: 0.16 blue: 0.46 alpha: 1.00];
 	self.navigationItem.rightBarButtonItem = killButton;
 
 }
@@ -58,7 +60,7 @@
 
 
 - (void)kill:(id)sender {
-	
+
 	AudioServicesPlaySystemSound(1521);
 
 	pid_t pid;
@@ -75,16 +77,17 @@
 	UIAlertController* resetAlert = [UIAlertController alertControllerWithTitle:@"LCTT"
 														message:@"Do you want to start fresh?"
 														preferredStyle:UIAlertControllerStyleAlert];
-    
+
 	UIAlertAction* confirmAction = [UIAlertAction actionWithTitle:@"Shoot" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
 
-	NSError *error;
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-        
-	BOOL success = [fileManager removeItemAtPath:[NSString stringWithFormat:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctt%@.plist", application.lowercaseString] error:&error];
-        
-	if(success) [self killApps];
-        
+		NSError *error;
+		NSFileManager *fileManager = [NSFileManager defaultManager];
+
+		BOOL success = [fileManager removeItemAtPath:[NSString stringWithFormat:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctt%@.plist", application.lowercaseString] error:&error];
+		BOOL successTwo = [fileManager removeItemAtPath:[NSString stringWithFormat:@"/var/mobile/Library/Preferences/LCTTMessages.plist"] error:&error];
+
+		if((success) || (successTwo)) [self blurEffect];
+
 	}];
 
 	UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Meh" style:UIAlertActionStyleCancel handler:nil];
@@ -94,6 +97,31 @@
 
 	[self presentViewController:resetAlert animated:YES completion:nil];
 
+
+}
+
+
+
+- (void)blurEffect {
+
+	_UIBackdropViewSettings *settings = [_UIBackdropViewSettings settingsForStyle:2];
+
+	_UIBackdropView *backdropView = [[_UIBackdropView alloc] initWithSettings:settings];
+	backdropView.layer.masksToBounds = YES;
+	backdropView.clipsToBounds = YES;
+	backdropView.alpha = 0;
+	backdropView.frame = self.view.bounds;
+	[self.view addSubview:backdropView];
+
+	[UIView animateWithDuration:1.8 delay:0.0 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+
+		[backdropView setAlpha:1.0];
+
+	} completion:^(BOOL finished) {
+
+		[self killApps];
+
+	}];
 
 }
 
