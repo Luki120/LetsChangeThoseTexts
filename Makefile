@@ -3,7 +3,6 @@ export TARGET := iphone:clang:latest:latest
 
 include $(THEOS)/makefiles/common.mk
 
-SUBPROJECTS += Preferences
-SUBPROJECTS += Instagram
-SUBPROJECTS += Twitter
+SUBPROJECTS += Instagram Preferences Twitter
+
 include $(THEOS_MAKE_PATH)/aggregate.mk

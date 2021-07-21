@@ -6,8 +6,18 @@
 
 
 @interface LCTTApplicationListController : PSListController {
-    NSString *application;
-}
 
+    NSString *application;
+
+}
 - (void)shatterThePrefsToPieces;
+@end
+
+@interface _UIBackdropViewSettings : NSObject
++ (id)settingsForStyle:(long long)arg1;
+@end
+
+@interface _UIBackdropView : UIView
+- (id)initWithFrame:(CGRect)arg1 autosizesToFitSuperview:(BOOL)arg2 settings:(id)arg3;
+- (id)initWithSettings:(id)arg1;
 @end
