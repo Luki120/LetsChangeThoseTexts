@@ -6,7 +6,7 @@
 @synthesize messages;
 
 - (instancetype)initWithTableView:(UITableView *)tableView forApplication:(NSString *)app {
-	
+
 	self = [super init];
 
 	application = app;
@@ -18,7 +18,7 @@
 }
 
 - (void)save {
-	
+
 	[NSUserDefaults.standardUserDefaults setObject:self.messages forKey:@"messages" inDomain:[NSString stringWithFormat:@"me.luki.runtimeoverflow.lctt%@messages", application.lowercaseString]];
 	[NSUserDefaults.standardUserDefaults synchronize];
 
@@ -133,9 +133,9 @@
 
 @implementation LCTTMessagesController
 
--(void)setSpecifier:(PSSpecifier*)specifier {
-	[super setSpecifier:specifier];
+- (void)setSpecifier:(PSSpecifier*)specifier {
 
+	[super setSpecifier:specifier];
 	application = [specifier propertyForKey:@"Application"];
 }
 
@@ -154,7 +154,7 @@
 	delegate = [[LCTTMessagesDelegate alloc] initWithTableView:lcttTableView forApplication:application];
 	lcttTableView.dataSource = delegate;
 	lcttTableView.delegate = delegate;
-
+	lcttTableView.contentInset = UIEdgeInsetsMake(44, 0, 0, 0); // haha hacky solution goes brr
 	[lcttTableView.leadingAnchor constraintEqualToAnchor:self.viewIfLoaded.leadingAnchor].active = YES;
 	[lcttTableView.trailingAnchor constraintEqualToAnchor:self.viewIfLoaded.trailingAnchor].active = YES;
 	[lcttTableView.topAnchor constraintEqualToAnchor:self.viewIfLoaded.safeAreaLayoutGuide.topAnchor].active = YES;
@@ -189,6 +189,7 @@
 	UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	leftButton.translatesAutoresizingMaskIntoConstraints = false;
 	[leftButton setImage:[UIImage systemImageNamed:@"arrow.backward.circle.fill"] forState:UIControlStateNormal];
+	[leftButton setTintColor:[UIColor colorWithRed: 0.84 green: 0.16 blue: 0.46 alpha: 1.00]];
 	[leftButton setPreferredSymbolConfiguration:[UIImageSymbolConfiguration configurationWithPointSize:32] forImageInState:UIControlStateNormal];
 	[leftButton addTarget:self action:@selector(sendLeft:) forControlEvents:UIControlEventPrimaryActionTriggered];
 	[bottomContainerView addSubview:leftButton];
@@ -201,6 +202,7 @@
 	UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	rightButton.translatesAutoresizingMaskIntoConstraints = false;
 	[rightButton setImage:[UIImage systemImageNamed:@"arrow.forward.circle.fill"] forState:UIControlStateNormal];
+	[rightButton setTintColor:[UIColor colorWithRed: 0.84 green: 0.16 blue: 0.46 alpha: 1.00]];
 	[rightButton setPreferredSymbolConfiguration:[UIImageSymbolConfiguration configurationWithPointSize:32] forImageInState:UIControlStateNormal];
 	[rightButton addTarget:self action:@selector(sendRight:) forControlEvents:UIControlEventPrimaryActionTriggered];
 	[bottomContainerView addSubview:rightButton];
@@ -215,6 +217,8 @@
 	textField.borderStyle = UITextBorderStyleRoundedRect;
 	textField.placeholder = @"Enter Message...";
 	textField.textAlignment = NSTextAlignmentCenter;
+//	textField.layer.borderWidth = 1.0f;
+//	textField.layer.borderColor = UIColor.blackColor.CGColor; // looks good, but idk yet
 	[bottomContainerView addSubview:textField];
 
 	[textField.leadingAnchor constraintEqualToAnchor:leftButton.trailingAnchor constant:12].active = true;
@@ -225,12 +229,37 @@
 
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+
+	[super viewWillAppear:animated];
+
+	if(self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark)
+
+		self.navigationController.navigationController.navigationBar.barTintColor = UIColor.blackColor;
+
+	else self.navigationController.navigationController.navigationBar.barTintColor = UIColor.whiteColor;
+
+	self.navigationController.navigationController.navigationBar.shadowImage = [UIImage new];
+	self.navigationController.navigationController.navigationBar.translucent = NO;
+
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+
+	[super viewWillDisappear:animated];
+
+	self.navigationController.navigationController.navigationBar.barTintColor = nil;
+	self.navigationController.navigationController.navigationBar.translucent = YES;
+
+}
+
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
 
 	if(self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
 
 		self.view.backgroundColor = UIColor.blackColor;
 		self.bottomBackgroundView.backgroundColor = UIColor.blackColor;
+		self.navigationController.navigationController.navigationBar.barTintColor = UIColor.blackColor;
 
 	}
 
@@ -238,6 +267,7 @@
 
 		self.view.backgroundColor = UIColor.whiteColor;
 		self.bottomBackgroundView.backgroundColor = UIColor.whiteColor;
+		self.navigationController.navigationController.navigationBar.barTintColor = UIColor.whiteColor;
 
 	}
 

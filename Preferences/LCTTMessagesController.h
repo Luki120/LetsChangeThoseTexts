@@ -9,7 +9,7 @@
 @end
 
 @interface LCTTMessagesDelegate : NSObject <UITableViewDelegate, UITableViewDataSource> {
-	
+
 	NSString *application;
 	UITableView *table;
 
