@@ -101,8 +101,91 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 }
 %end
 
-%ctor{
-	loadPrefs();
 
+// Posts
+
+%hook TFNTwitterStatus
+
+
+- (NSString *)text {
+
+	if(self.fromUserID == targetUserID) return @"brrr";
+	else return %orig;
+
+}
+
+- (NSString *)fullText {
+
+	if(self.fromUserID == targetUserID) return @"brrr";
+	else return %orig;
+
+}
+
+- (NSString *)displayText {
+
+	if(self.fromUserID == targetUserID) return @"brrr";
+	else return %orig;
+
+}
+
+- (NSString *)originalText {
+
+	if(self.fromUserID == targetUserID) return @"brrr";
+	else return %orig;
+
+}
+
+%end
+
+%hook TFNTwitterCanonicalUser
+
+- (TFNTwitterCanonicalUser *)initWithCS2User:(id)user{
+
+	TFNTwitterCanonicalUser *userr = %orig;
+
+	if([userr.username isEqualToString:targetUsername]) targetUserID = userr.userID;
+
+	return userr;
+
+}
+
+- (id)profileImageMediaEntity {
+
+	id media = %orig;
+
+	if(self.userID == targetUserID && profilePictureURL && ![profilePictureURL isEqualToString:@""]) MSHookIvar<NSString *>(media, "_mediaURL") = profilePictureURL;
+
+	return media;
+
+}
+
+- (BOOL)verified {
+
+	if(self.userID == targetUserID) return spoofVerified;
+	else return %orig;
+
+}
+
+- (NSString *)displayUsername {
+
+	if(self.userID == targetUserID && username && ![username isEqualToString:@""]) return [NSString stringWithFormat:@"@%@", username];
+	else return %orig;
+
+}
+
+- (NSString *)displayFullName {
+
+	if(self.userID == targetUserID && fullName && ![fullName isEqualToString:@""]) return fullName;
+	else return %orig;
+
+}
+
+%end
+
+
+%ctor{
+
+	loadPrefs();
 	if(enableTweak && targetUsername && targetUsername.length > 0) %init;
+
 }

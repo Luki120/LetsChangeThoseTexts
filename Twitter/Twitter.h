@@ -33,3 +33,11 @@
 
 @interface TFNDirectMessageConversation : T1DirectMessageConversation //Bad practises go brrr, but what can you do when you're lazy
 @end
+
+@interface TFNTwitterStatus : NSObject
+@property (nonatomic, assign, readonly) NSInteger fromUserID;
+@end
+
+@interface TFNTwitterUser : NSObject
+@property (nonatomic, assign, readonly) NSInteger userID;
+@end
