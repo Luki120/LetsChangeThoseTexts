@@ -84,13 +84,13 @@
 	UIAlertAction* confirmAction = [UIAlertAction actionWithTitle:@"Shoot" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
 
 		NSFileManager *fileManager = [NSFileManager defaultManager];
-			
+
 		[fileManager removeItemAtPath:[NSString stringWithFormat:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctt%@.plist", application.lowercaseString] error:NULL];
 		[NSUserDefaults.standardUserDefaults removePersistentDomainForName:[NSString stringWithFormat:@"me.luki.runtimeoverflow.lctt%@messages", application.lowercaseString]];
 		[NSUserDefaults.standardUserDefaults synchronize];
 
 		[self.navigationController popViewControllerAnimated:true];
-    
+
 	}];
 
 	UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Meh" style:UIAlertActionStyleCancel handler:nil];
@@ -134,6 +134,27 @@
 	pid_t pid;
 	const char* args[] = {"killall", "Preferences", NULL};
 	posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
+
+}
+
+@end
+
+
+@implementation LCTTTextViewCell
+
+
+- (void)updateConfigurationUsingState:(UICellConfigurationState *)state {
+
+	if(state) {
+
+		UITextView *postText = [[UITextView alloc] initWithFrame:CGRectMake(5, 5, 290, 290)];
+		postText.font = [UIFont systemFontOfSize:15.0];
+		postText.text = @"Haha";
+		postText.textColor = [UIColor blackColor];
+		postText.editable = NO;
+		[self.contentView addSubview:postText];
+
+	}
 
 }
 
