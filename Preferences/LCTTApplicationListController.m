@@ -144,14 +144,15 @@
 
 
 - (void)updateConfigurationUsingState:(UICellConfigurationState *)state {
-
+	[super updateConfigurationUsingState:state];
+	
 	if(state) {
 
 		UITextView *postText = [[UITextView alloc] initWithFrame:CGRectMake(5, 5, 290, 290)];
 		postText.font = [UIFont systemFontOfSize:15.0];
 		postText.text = @"Haha";
-		postText.textColor = [UIColor blackColor];
-		postText.editable = NO;
+		postText.textColor = [UIColor labelColor];
+		postText.editable = true;
 		[self.contentView addSubview:postText];
 
 	}
