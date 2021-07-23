@@ -1,7 +1,6 @@
 #include "LCTTApplicationListController.h"
 #import "LCTTMessagesController.h"
 
-
 @implementation LCTTApplicationListController
 
 - (NSArray *)specifiers {
@@ -18,7 +17,7 @@
 
 }
 
--(void)setSpecifier:(PSSpecifier*)specifier {
+- (void)setSpecifier:(PSSpecifier*)specifier {
 
 	[super setSpecifier:specifier];
 
@@ -142,20 +141,44 @@
 
 @implementation LCTTTextViewCell
 
+- (void)updateConfigurationUsingState:(id)state {
 
-- (void)updateConfigurationUsingState:(UICellConfigurationState *)state {
 	[super updateConfigurationUsingState:state];
-	
+
 	if(state) {
 
-		UITextView *postText = [[UITextView alloc] initWithFrame:CGRectMake(5, 5, 290, 290)];
-		postText.font = [UIFont systemFontOfSize:15.0];
-		postText.text = @"Haha";
-		postText.textColor = [UIColor labelColor];
-		postText.editable = true;
+		UITextView *postText = [[UITextView alloc] init];
+		postText.font = [UIFont systemFontOfSize:17];
+		postText.text = [self.specifier performGetter];
+		postText.editable = YES;
+		postText.delegate = self;
+		postText.textColor = UIColor.labelColor;
+		postText.scrollEnabled = NO;
+		postText.translatesAutoresizingMaskIntoConstraints = NO;
+
 		[self.contentView addSubview:postText];
 
+		[postText.topAnchor constraintEqualToAnchor : self.contentView.topAnchor].active = YES;
+		[postText.bottomAnchor constraintEqualToAnchor : self.contentView.bottomAnchor].active = YES;
+		[postText.leadingAnchor constraintEqualToAnchor : self.contentView.leadingAnchor constant:10].active = YES;
+		[postText.trailingAnchor constraintEqualToAnchor : self.contentView.trailingAnchor].active = YES;
+		[postText.widthAnchor constraintEqualToConstant:364].active = YES;
+		[postText.heightAnchor constraintGreaterThanOrEqualToConstant:44].active = YES;
+
 	}
+
+}
+
+
+- (void)textViewDidEndEditing:(UITextView *)textView {
+
+	[self.specifier performSetterWithValue:textView.text];
+
+}
+
+- (void)_returnKeyPressed:(id)arg1 {
+
+	[self endEditing:YES];
 
 }
 

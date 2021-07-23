@@ -22,6 +22,9 @@
 - (id)initWithSettings:(id)arg1;
 @end
 
+@interface LCTTTextViewCell : PSTableCell <UITextViewDelegate> {
 
-@interface LCTTTextViewCell : PSTableCell
+    NSLayoutConstraint *postTextHeightAnchor;
+
+}
 @end
