@@ -76,9 +76,7 @@
 
 	AudioServicesPlaySystemSound(1521);
 
-	UIAlertController* resetAlert = [UIAlertController alertControllerWithTitle:@"LCTT"
-														message:@"Do you want to start fresh?"
-														preferredStyle:UIAlertControllerStyleAlert];
+	UIAlertController* resetAlert = [UIAlertController alertControllerWithTitle:@"LCTT" message:@"Do you want to start fresh?" preferredStyle:UIAlertControllerStyleAlert];
 
 	UIAlertAction* confirmAction = [UIAlertAction actionWithTitle:@"Shoot" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
 
@@ -143,7 +141,7 @@
 
 - (void)updateConfigurationUsingState:(id)state {
 
-	[super updateConfigurationUsingState:state];
+//	[super updateConfigurationUsingState:state];
 
 	if(state) {
 
@@ -154,6 +152,7 @@
 		postText.delegate = self;
 		postText.textColor = UIColor.labelColor;
 		postText.scrollEnabled = NO;
+		postText.backgroundColor = UIColor.blackColor;
 		postText.translatesAutoresizingMaskIntoConstraints = NO;
 
 		[self.contentView addSubview:postText];
@@ -176,9 +175,16 @@
 
 }
 
-- (void)_returnKeyPressed:(id)arg1 {
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
 
-	[self endEditing:YES];
+	if([text isEqualToString:@"\n"]) {
+
+		[textView resignFirstResponder];
+		return NO;
+
+	}
+
+	return YES;
 
 }
 
