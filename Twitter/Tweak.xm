@@ -9,7 +9,6 @@ static NSString *profilePictureURL = NULL;
 static NSString *username = NULL;
 static NSString *fullName = NULL;
 static NSString *fakePostText = nil; // establishing nil superiority here >> :thishowitis:
-#define isCurrentApp(string) [[[NSBundle mainBundle] bundleIdentifier] isEqual : string]
 
 static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctttwitter.plist";
 
