@@ -177,7 +177,9 @@
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
 
-	if([text isEqualToString:@"\n"]) {
+	NSRange resultRange = [text rangeOfCharacterFromSet:[NSCharacterSet newlineCharacterSet] options:NSBackwardsSearch];
+
+	if([text length] == 1 && resultRange.location != NSNotFound) {
 
 		[textView resignFirstResponder];
 		return NO;
