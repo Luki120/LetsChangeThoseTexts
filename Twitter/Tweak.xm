@@ -8,10 +8,13 @@ static BOOL spoofVerified = false;
 static NSString *profilePictureURL = NULL;
 static NSString *username = NULL;
 static NSString *fullName = NULL;
+static NSString *fakePostText = nil; // establishing nil superiority here >> :thishowitis:
+#define isCurrentApp(string) [[[NSBundle mainBundle] bundleIdentifier] isEqual : string]
 
 static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctttwitter.plist";
 
 static void loadPrefs() {
+
 	NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:prefsKeys];
 	NSMutableDictionary *prefs = dict ? [dict mutableCopy] : [NSMutableDictionary dictionary];
 
@@ -21,6 +24,8 @@ static void loadPrefs() {
 	profilePictureURL = prefs[@"newProfilePictureURL"] ? prefs[@"newProfilePictureURL"] : NULL;
 	username = prefs[@"newUsername"] ? prefs[@"newUsername"] : NULL;
 	fullName = prefs[@"newFullName"] ? prefs[@"newFullName"] : NULL;
+	fakePostText = prefs[@"fakePostText"] ? prefs[@"fakePostText"] : nil;
+
 }
 
 static NSInteger targetUserID = -1;
@@ -109,28 +114,28 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 
 - (NSString *)text {
 
-	if(self.fromUserID == targetUserID) return @"brrr";
+	if(self.fromUserID == targetUserID) return fakePostText;
 	else return %orig;
 
 }
 
 - (NSString *)fullText {
 
-	if(self.fromUserID == targetUserID) return @"brrr";
+	if(self.fromUserID == targetUserID) return fakePostText;
 	else return %orig;
 
 }
 
 - (NSString *)displayText {
 
-	if(self.fromUserID == targetUserID) return @"brrr";
+	if(self.fromUserID == targetUserID) return fakePostText;
 	else return %orig;
 
 }
 
 - (NSString *)originalText {
 
-	if(self.fromUserID == targetUserID) return @"brrr";
+	if(self.fromUserID == targetUserID) return fakePostText;
 	else return %orig;
 
 }
@@ -183,7 +188,7 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 %end
 
 
-%ctor{
+%ctor {
 
 	loadPrefs();
 	if(enableTweak && targetUsername && targetUsername.length > 0) %init;
