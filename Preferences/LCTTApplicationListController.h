@@ -23,7 +23,8 @@
 @end
 
 @interface LCTTTextViewCell : PSTableCell <UITextViewDelegate> {
-
+	
+	UITextView *postText;
     NSLayoutConstraint *postTextHeightAnchor;
 
 }

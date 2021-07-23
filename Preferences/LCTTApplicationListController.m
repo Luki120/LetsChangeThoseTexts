@@ -139,40 +139,70 @@
 
 @implementation LCTTTextViewCell
 
-- (void)updateConfigurationUsingState:(id)state {
+- (id)detailTextLabel {
+	return NULL;
+}
 
-//	[super updateConfigurationUsingState:state];
+- (void)updateHeight{
+	NSNumber *height = (NSNumber *) [self.specifier propertyForKey:@"lheight"];
+	NSNumber *newHeight = @(ceil([postText intrinsicContentSize].height));
+	
+	if(![height isEqualToNumber:newHeight]){
+		[self.specifier setProperty:newHeight forKey:@"lheight"];
+		[self.specifier setProperty:@([postText canResignFirstResponder]) forKey:@"firstResponder"];
+		[self.specifier performSetterWithValue:postText.text];
+		[((LCTTApplicationListController *) [self cellTarget]) reloadSpecifier:self.specifier animated:true];
+	}
+}
 
-	if(state) {
+- (void)willMoveToSuperview:(id)superview {
 
-		UITextView *postText = [[UITextView alloc] init];
+	[super willMoveToSuperview:superview];
+
+	if(!postText) {
+
+		postText = [[UITextView alloc] init];
 		postText.font = [UIFont systemFontOfSize:17];
 		postText.text = [self.specifier performGetter];
 		postText.editable = YES;
 		postText.delegate = self;
 		postText.textColor = UIColor.labelColor;
 		postText.scrollEnabled = NO;
-		postText.backgroundColor = UIColor.blackColor;
+		postText.backgroundColor = UIColor.clearColor;
 		postText.translatesAutoresizingMaskIntoConstraints = NO;
 
 		[self.contentView addSubview:postText];
 
-		[postText.topAnchor constraintEqualToAnchor : self.contentView.topAnchor].active = YES;
-		[postText.bottomAnchor constraintEqualToAnchor : self.contentView.bottomAnchor].active = YES;
-		[postText.leadingAnchor constraintEqualToAnchor : self.contentView.leadingAnchor constant:10].active = YES;
-		[postText.trailingAnchor constraintEqualToAnchor : self.contentView.trailingAnchor].active = YES;
-		[postText.widthAnchor constraintEqualToConstant:364].active = YES;
-		[postText.heightAnchor constraintGreaterThanOrEqualToConstant:44].active = YES;
+		[postText.topAnchor constraintEqualToAnchor:self.contentView.topAnchor].active = YES;
+		[postText.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor].active = YES;
+		[postText.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor constant:10].active = YES;
+		[postText.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:-10].active = YES;
+		
+		[postText resignFirstResponder];
+		
+		if(((NSNumber *) [self.specifier propertyForKey:@"firstResponder"]).boolValue){
+			[self.specifier removePropertyForKey:@"firstResponder"];
+			[postText becomeFirstResponder];
+		}
 
 	}
 
 }
 
+- (void)textViewDidBeginEditing:(UITextView *)textView {
+
+	if(![self.specifier propertyForKey:@"lheight"]) [self.specifier setProperty:@(ceil([postText intrinsicContentSize].height)) forKey:@"lheight"];
+
+}
 
 - (void)textViewDidEndEditing:(UITextView *)textView {
 
 	[self.specifier performSetterWithValue:textView.text];
 
+}
+
+- (void)textViewDidChange:(UITextView *)textView {
+	[self updateHeight];
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
