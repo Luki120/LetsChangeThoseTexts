@@ -147,7 +147,7 @@
 	NSNumber *height = (NSNumber *) [self.specifier propertyForKey:@"lheight"];
 	NSNumber *newHeight = @(ceil([postText intrinsicContentSize].height));
 	
-	if(![height isEqualToNumber:newHeight]){
+	if(fabs(height.doubleValue - newHeight.doubleValue) > 10){
 		[self.specifier setProperty:newHeight forKey:@"lheight"];
 		[self.specifier setProperty:@([postText canResignFirstResponder]) forKey:@"firstResponder"];
 		[self.specifier performSetterWithValue:postText.text];
