@@ -81,14 +81,14 @@
 				<string>PSGroupCell</string>
 			</dict>
 			<dict>
-				<key>action</key>
-				<string>UITextView</string>
 				<key>cell</key>
 				<string>PSTableCell</string>
 				<key>cellClass</key>
 				<string>LCTTTextViewCell</string>
 				<key>label</key>
-				<string>Posts</string>
+				<string></string>
+				<key>key</key>
+				<string>fakePostText</string>
 			</dict>
 			<dict>
 				<key>cell</key>
