@@ -9,6 +9,7 @@ static NSString *profilePictureURL = NULL;
 static NSString *username = NULL;
 static NSString *fullName = NULL;
 static NSString *fakePostText = nil; // establishing nil superiority here >> :thishowitis:
+static BOOL showSeen = true;
 
 static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctttwitter.plist";
 
@@ -24,6 +25,7 @@ static void loadPrefs() {
 	username = prefs[@"newUsername"] ? prefs[@"newUsername"] : NULL;
 	fullName = prefs[@"newFullName"] ? prefs[@"newFullName"] : NULL;
 	fakePostText = prefs[@"fakePostText"] ? prefs[@"fakePostText"] : nil;
+	showSeen = prefs[@"showSeen"] ? [prefs[@"showSeen"] boolValue] : YES;
 
 }
 
@@ -47,7 +49,9 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 
 			if(msgs) {
 				for(NSDictionary *msg in msgs) {
-					[messages addObject:createMessage(msg[@"message"], ((NSNumber *) msg[@"me"]).boolValue ? self.perspectivalParticipant.participatingUser : self.participantsExcludingPerspectivalUser[0].participatingUser)];
+					TFNDirectMessageEntry *entry = createMessage(msg[@"message"], ((NSNumber *) msg[@"me"]).boolValue ? self.perspectivalParticipant.participatingUser : self.participantsExcludingPerspectivalUser[0].participatingUser);
+					entry.conversation = self;
+					[messages addObject:entry];
 				}
 			}
 		}
@@ -70,6 +74,20 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 	} else return %orig;
 }
 
+%end
+
+%hook TFNDirectMessageEntry
+- (BOOL)seenByAllParticipants {
+	if(!self.conversation.isSelfConversation && self.conversation.participantsExcludingPerspectivalUser.count == 1 && self.conversation.participantsExcludingPerspectivalUser[0].participatingUser.userID == targetUserID) {
+		return showSeen;
+	} else return %orig;
+}
+
+- (id)seenByParticipants {
+	if(!self.conversation.isSelfConversation && self.conversation.participantsExcludingPerspectivalUser.count == 1 && self.conversation.participantsExcludingPerspectivalUser[0].participatingUser.userID == targetUserID) {
+		return showSeen ? self.conversation.participantsExcludingPerspectivalUser : @[];
+	} else return %orig;
+}
 %end
 
 %hook TFNDirectMessageUser
