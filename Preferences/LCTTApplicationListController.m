@@ -140,19 +140,25 @@
 @implementation LCTTTextViewCell
 
 - (id)detailTextLabel {
+
 	return NULL;
+
 }
 
-- (void)updateHeight{
+- (void)updateHeight {
+
 	NSNumber *height = (NSNumber *) [self.specifier propertyForKey:@"lheight"];
 	NSNumber *newHeight = @(ceil([postText intrinsicContentSize].height));
-	
+
 	if(fabs(height.doubleValue - newHeight.doubleValue) > 10){
+
 		[self.specifier setProperty:newHeight forKey:@"lheight"];
 		[self.specifier setProperty:@([postText canResignFirstResponder]) forKey:@"firstResponder"];
 		[self.specifier performSetterWithValue:postText.text];
 		[((LCTTApplicationListController *) [self cellTarget]) reloadSpecifier:self.specifier animated:true];
+
 	}
+
 }
 
 - (void)willMoveToSuperview:(id)superview {
@@ -177,12 +183,15 @@
 		[postText.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor].active = YES;
 		[postText.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor constant:10].active = YES;
 		[postText.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:-10].active = YES;
-		
+		[postText.heightAnchor constraintGreaterThanOrEqualToConstant:44].active = YES;
+
 		[postText resignFirstResponder];
-		
-		if(((NSNumber *) [self.specifier propertyForKey:@"firstResponder"]).boolValue){
+
+		if(((NSNumber *) [self.specifier propertyForKey:@"firstResponder"]).boolValue) {
+
 			[self.specifier removePropertyForKey:@"firstResponder"];
 			[postText becomeFirstResponder];
+
 		}
 
 	}
@@ -202,7 +211,9 @@
 }
 
 - (void)textViewDidChange:(UITextView *)textView {
+
 	[self updateHeight];
+
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
