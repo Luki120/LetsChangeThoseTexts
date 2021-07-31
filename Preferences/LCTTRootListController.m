@@ -2,8 +2,6 @@
 
 static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lcttprefs.plist";
 
-#define tint [UIColor colorWithRed: 0.84 green: 0.16 blue: 0.46 alpha: 1.00]
-
 
 @implementation LCTTRootListController
 
@@ -38,34 +36,6 @@ static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeov
 
 	((UITableView *)[self.view.subviews objectAtIndex:0]).keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
 
-}
-
-@end
-
-
-@implementation LCTTTableCell
-
-
-- (void)tintColorDidChange {
-
-	[super tintColorDidChange];
-
-	self.textLabel.textColor = tint;
-	self.textLabel.highlightedTextColor = tint;
-
-}
-
-
-- (void)refreshCellContentsWithSpecifier:(PSSpecifier *)specifier {
-
-	[super refreshCellContentsWithSpecifier:specifier];
-
-	if ([self respondsToSelector:@selector(tintColor)]) {
-
-		self.textLabel.textColor = tint;
-		self.textLabel.highlightedTextColor = tint;
-
-	}
 }
 
 @end
