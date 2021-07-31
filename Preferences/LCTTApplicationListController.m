@@ -1,6 +1,11 @@
 #include "LCTTApplicationListController.h"
 #import "LCTTMessagesController.h"
 
+
+#define tint [UIColor colorWithRed: 0.84 green: 0.16 blue: 0.46 alpha: 1.00]
+#define twitterTint [UIColor colorWithRed: 0.00 green: 0.67 blue: 0.93 alpha: 1.00]
+
+
 @implementation LCTTApplicationListController
 
 - (NSArray *)specifiers {
@@ -37,7 +42,8 @@
 									style:UIBarButtonItemStylePlain
 									target:self
 									action:@selector(kill:)];
-	killButton.tintColor = [UIColor colorWithRed: 0.84 green: 0.16 blue: 0.46 alpha: 1.00];
+	if([application isEqualToString:@"Instagram"]) killButton.tintColor = [UIColor colorWithRed: 0.84 green: 0.16 blue: 0.46 alpha: 1.00];
+	else if ([application isEqualToString:@"Twitter"]) killButton.tintColor = [UIColor colorWithRed: 0.00 green: 0.67 blue: 0.93 alpha: 1.00];
 	self.navigationItem.rightBarButtonItem = killButton;
 
 }
@@ -131,6 +137,32 @@
 	pid_t pid;
 	const char* args[] = {"killall", "Preferences", NULL};
 	posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)args, NULL);
+
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+
+
+	UITableViewCell *cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
+
+
+	if([application isEqualToString:@"Instagram"]) {
+
+		cell.textLabel.textColor = tint;
+		cell.textLabel.highlightedTextColor = tint;
+
+	}
+
+
+	else if([application isEqualToString:@"Twitter"]) {
+
+		cell.textLabel.textColor = twitterTint;
+		cell.textLabel.highlightedTextColor = twitterTint;
+
+	}
+
+	return cell;
 
 }
 
