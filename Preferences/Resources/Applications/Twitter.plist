@@ -123,6 +123,8 @@
 				<string>shatterThePrefsToPieces</string>
 				<key>cell</key>
 				<string>PSButtonCell</string>
+				<key>cellClass</key>
+				<string>LCTTTableCell</string>
 				<key>label</key>
 				<string>Reset Preferences</string>
 			</dict>
