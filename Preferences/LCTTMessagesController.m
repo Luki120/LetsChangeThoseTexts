@@ -92,6 +92,8 @@
 
 	UIColor *firstColor = ((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue ? [UIColor colorWithRed: 0.48 green: 0.84 blue: 0.96 alpha: 1.00] : [UIColor colorWithRed: 0.84 green: 0.48 blue: 0.96 alpha: 1.00];
 	UIColor *secondColor = ((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue ? [UIColor colorWithRed: 0.47 green: 0.50 blue: 0.96 alpha: 1.00] : [UIColor colorWithRed: 0.50 green: 0.47 blue: 0.96 alpha: 1.00];
+	UIColor *twitterFirstColor = ((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue ? [UIColor colorWithRed: 0.16 green: 0.98 blue: 0.87 alpha: 1.00] : [UIColor colorWithRed: 0.40 green: 0.99 blue: 0.94 alpha: 1.00];
+	UIColor *twitterSecondColor = ((NSNumber *) self.messages[indexPath.row][@"me"]).boolValue ? [UIColor colorWithRed: 0.30 green: 0.51 blue: 1.00 alpha: 1.00] : [UIColor colorWithRed: 0.11 green: 0.44 blue: 0.64 alpha: 1.00];
 
 	[cell layoutIfNeeded];
 
@@ -99,8 +101,8 @@
 	gradient.frame = cell.subviews[0].bounds;
 	gradient.startPoint = CGPointZero;
 	gradient.endPoint = CGPointMake(1, 1);
-	gradient.colors = [NSArray arrayWithObjects:(id)firstColor.CGColor, (id)secondColor.CGColor, nil];
-
+	if([application isEqualToString:@"Instagram"]) gradient.colors = [NSArray arrayWithObjects:(id)firstColor.CGColor, (id)secondColor.CGColor, nil];
+	if([application isEqualToString:@"Twitter"]) gradient.colors = [NSArray arrayWithObjects:(id)twitterFirstColor.CGColor, (id)twitterSecondColor.CGColor, nil];
 	[cell.subviews[0].layer insertSublayer:gradient atIndex:0];
 
 }
