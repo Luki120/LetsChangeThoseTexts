@@ -40,6 +40,16 @@
 				<key>cell</key>
 				<string>PSSwitchCell</string>
 				<key>default</key>
+				<true/>
+				<key>label</key>
+				<string>Show Seen</string>
+				<key>key</key>
+				<string>showSeen</string>
+			</dict>
+			<dict>
+				<key>cell</key>
+				<string>PSSwitchCell</string>
+				<key>default</key>
 				<false/>
 				<key>label</key>
 				<string>Spoof Verified</string>
@@ -48,13 +58,17 @@
 			</dict>
 			<dict>
 				<key>cell</key>
+				<string>PSGroupCell</string>
+			</dict>
+			<dict>
+				<key>cell</key>
 				<string>PSEditTextCell</string>
 				<key>default</key>
 				<string></string>
 				<key>placeholder</key>
-				<string>New Profile Picture URL</string>
+				<string>New Full Name</string>
 				<key>key</key>
-				<string>newProfilePictureURL</string>
+				<string>newFullName</string>
 			</dict>
 			<dict>
 				<key>cell</key>
@@ -72,9 +86,9 @@
 				<key>default</key>
 				<string></string>
 				<key>placeholder</key>
-				<string>New Full Name</string>
+				<string>New Profile Picture URL</string>
 				<key>key</key>
-				<string>newFullName</string>
+				<string>newProfilePictureURL</string>
 			</dict>
 			<dict>
 				<key>cell</key>
@@ -86,34 +100,24 @@
 				<key>label</key>
 				<string>Configure Messages</string>
 				<key>detail</key>
-				<string>LCTTMessagesController</string>
+				<string>LCTTMessagesVC</string>
 				<key>isController</key>
 				<true/>
-			</dict>
-			<dict>
-				<key>cell</key>
-				<string>PSSwitchCell</string>
-				<key>default</key>
-				<true/>
-				<key>label</key>
-				<string>Show Seen</string>
-				<key>key</key>
-				<string>showSeen</string>
 			</dict>
 			<dict>
 				<key>cell</key>
 				<string>PSGroupCell</string>
 			</dict>
 			<dict>
-				<key>action</key>
-				<string>shatterThePrefsToPieces</string>
 				<key>cell</key>
 				<string>PSButtonCell</string>
 				<key>label</key>
 				<string>Reset Preferences</string>
+				<key>action</key>
+				<string>shatterThePrefsToPieces</string>
 			</dict>
 		</array>
 		<key>title</key>
-		<string>LCTT - Instagram</string>
+		<string>Instagram</string>
 	</dict>
 </plist>
