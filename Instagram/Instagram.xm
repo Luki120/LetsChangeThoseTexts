@@ -1,6 +1,5 @@
-#import <UIKit/UIKit.h>
-#import <stdlib.h>
 #import "Instagram.h"
+
 
 // Variables related to preferences
 
@@ -12,12 +11,9 @@ static NSString *username = NULL;
 static NSString *fullName = NULL;
 static BOOL showSeen = true;
 
-static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lcttinstagram.plist";
-
-
 static void loadPrefs() {
 
-	NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:prefsKeys];
+	NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile: kIgPath];
 	NSMutableDictionary *prefs = dict ? [dict mutableCopy] : [NSMutableDictionary dictionary];
 
 	enableTweak = prefs[@"enableTweak"] ? [prefs[@"enableTweak"] boolValue] : NO;
@@ -37,12 +33,11 @@ static IGUser *me = NULL;
 static IGUser *target = NULL;
 static UIImage *img = NULL;
 
-//List of our custom messages
+// List of our custom messages
 
-static NSMutableArray<IGDirectPublishedMessage *> *messages = [[NSMutableArray alloc] init];
+static NSMutableArray<IGDirectPublishedMessage *> *messages = [NSMutableArray new];
 
-
-static IGDirectPublishedMessage * createMessage(NSString *message, NSString *senderPk){
+static IGDirectPublishedMessage * createMessage(NSString *message, NSString *senderPk) {
 
 	NSString *serverId = [NSString stringWithFormat:@"%d", arc4random_uniform(1000000)];
 	NSString *clientContext = [NSString stringWithFormat:@"%d", arc4random_uniform(1000000)];
@@ -68,7 +63,7 @@ BOOL newVerified(IGUser *self, SEL _cmd) {
 
 NSString * (*oldFullName)(IGUser *self, SEL _cmd);
 
-NSString * newFullName(IGUser *self, SEL _cmd) {
+NSString *newFullName(IGUser *self, SEL _cmd) {
 
 	if(self == target && fullName && ![fullName isEqualToString:@""]) return fullName;
 	else return oldFullName(self, _cmd);
@@ -79,7 +74,7 @@ NSString * newFullName(IGUser *self, SEL _cmd) {
 
 NSString * (*oldUsername)(IGUser *self, SEL _cmd);
 
-NSString * newUsername(IGUser *self, SEL _cmd) {
+NSString *newUsername(IGUser *self, SEL _cmd) {
 
 	if(self == target && username && ![username isEqualToString:@""]) return username;
 	else return oldUsername(self, _cmd);
@@ -91,6 +86,7 @@ NSString * newUsername(IGUser *self, SEL _cmd) {
 void (*oldProfilePicture)(IGProfilePictureImageView *self, SEL _cmd);
 
 void newProfilePicture(IGProfilePictureImageView *self, SEL _cmd) {
+
 	oldProfilePicture(self, _cmd);
 	
 	// Only swap the profile picture if it's the target user and the profile picture exists
@@ -107,11 +103,12 @@ void newProfilePicture(IGProfilePictureImageView *self, SEL _cmd) {
 
 NSDictionary * (*oldLastSeen)(IGDirectThreadMetadata *self, SEL _cmd);
 
-NSDictionary * newLastSeen(IGDirectThreadMetadata *self, SEL _cmd) {
+NSDictionary *newLastSeen(IGDirectThreadMetadata *self, SEL _cmd) {
 	
 	NSDictionary *original = oldLastSeen(self, _cmd);
 
 	if(!self.isGroup && self.users.count == 1 && self.users[0] == target) {
+
 		NSMutableDictionary *mutableDict = original.mutableCopy;
 		if(showSeen && messages.count > 0) mutableDict[target.pk] = [[%c(IGDirectLastSeenMessageInfo) alloc] initWithMessageId:messages[messages.count - 1].metadata.serverId seenAtTimestamp:NSDate.date shhMessageSeenInfo:NULL];
 		else mutableDict[target.pk] = NULL;
@@ -160,14 +157,15 @@ id newThread(IGDirectUIThread *self, SEL _cmd, id threadKey, id threadId, id vie
 id (*oldObjectStores)(id self, SEL _cmd, id mediaStore, id productSaveStatusStore, id storyReelStore, IGUserStore *userStore);
 
 id newObjectStores(id self, SEL _cmd, id mediaStore, id productSaveStatusStore, id storyReelStore, IGUserStore *_userStore){
+
 	userStore = _userStore;
 	
 	return oldObjectStores(self, _cmd, mediaStore, productSaveStatusStore, storyReelStore, _userStore);
 
 }
 
-%hook IGAppDelegate
 
+%hook IGAppDelegate
 
 // We need to hook this method because SBSharedFramework is only loaded right before this
 
@@ -176,62 +174,61 @@ id newObjectStores(id self, SEL _cmd, id mediaStore, id productSaveStatusStore, 
 	// Load tweak preferences
 
 	loadPrefs();
-	
+
 	// Disable the tweak if not enabled or there's no target username
-	
+
 	if(!enableTweak || !targetUsername) {
-	
+
 		%orig;
 		return;
-	
+
 	}
-	
+
 	// Hook the IGObjectStores initializer to obtain the IGUserStore instance
 
-	MSHookMessageEx(NSClassFromString(@"IGObjectStores"), @selector(initWithMediaStore:productSaveStatusStore:storyReelStore:userStore:), (IMP) &newObjectStores, (IMP*) &oldObjectStores);
-	
+	MSHookMessageEx(NSClassFromString(@"IGObjectStores"), @selector(initWithMediaStore:productSaveStatusStore:storyReelStore:userStore:), (IMP) &newObjectStores, (IMP *) &oldObjectStores);
+
 	// Call the original method implementation, which will execute the above hook and set the IGUserStore
-	
+
 	%orig;
-	
+
 	// Obtain the IGUsers for the signed in account and the target user
-	
+
 	me = [userStore userWithPK:[self.window.userSession pk]];
 	target = [userStore storedUserWithUsername:targetUsername];
 	if(!target) target = [userStore storedUserWithUsername:username];
-	
+
 	// If either of the users don't exist, abort
-	
+
 	if(!me || !target) return;
-	
+
 	// Load the image from the interwebz
-	
+
 	if(profilePictureURL && ![profilePictureURL isEqualToString:@""]) img = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:profilePictureURL]]];
-	
+
 	NSArray<NSDictionary *> *msgs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lcttinstagrammessages.plist"][@"messages"];
-	
+
 	if(msgs) {
-		
-		for(NSDictionary *msg in msgs) {
-			
+
+		for(NSDictionary *msg in msgs)
+
 			[messages addObject:createMessage(msg[@"message"], ((NSNumber *) msg[@"me"]).boolValue ? me.pk : target.pk)];
-		
-		}
-	
+
 	}
-	
+
 	// Initialize all other hooks
-	
-	MSHookMessageEx(NSClassFromString(@"IGDirectUIThread"), @selector(initWithThreadKey:threadId:viewerId:threadIdV2ForInboxPaging:metadata:visualMessageInfo:publishedMessageSet:publishedMessagesInCurrentThreadRange:outgoingMessageSet:threadMessagesRange:messageIslandRange:), (IMP) &newThread, (IMP*) &oldThread);
-	MSHookMessageEx(NSClassFromString(@"IGProfilePictureImageView"), @selector(_updateImageViewWithProcessedImage), (IMP) &newProfilePicture, (IMP*) &oldProfilePicture);
-	MSHookMessageEx(NSClassFromString(@"IGDirectThreadMetadata"), @selector(lastSeenMessageIdsForUserIds), (IMP) &newLastSeen, (IMP*) &oldLastSeen);
-	
+
+	MSHookMessageEx(NSClassFromString(@"IGDirectUIThread"), @selector(initWithThreadKey:threadId:viewerId:threadIdV2ForInboxPaging:metadata:visualMessageInfo:publishedMessageSet:publishedMessagesInCurrentThreadRange:outgoingMessageSet:threadMessagesRange:messageIslandRange:), (IMP) &newThread, (IMP *) &oldThread);
+	MSHookMessageEx(NSClassFromString(@"IGProfilePictureImageView"), @selector(_updateImageViewWithProcessedImage), (IMP) &newProfilePicture, (IMP *) &oldProfilePicture);
+	MSHookMessageEx(NSClassFromString(@"IGDirectThreadMetadata"), @selector(lastSeenMessageIdsForUserIds), (IMP) &newLastSeen, (IMP *) &oldLastSeen);
+
 	// Initiate IGUser hooks
-	
-	MSHookMessageEx(NSClassFromString(@"IGUser"), @selector(isVerified), (IMP) &newVerified, (IMP*) &oldVerified);
-	MSHookMessageEx(NSClassFromString(@"IGUser"), @selector(fullName), (IMP) &newFullName, (IMP*) &oldFullName);
-	MSHookMessageEx(NSClassFromString(@"IGUser"), @selector(username), (IMP) &newUsername, (IMP*) &oldUsername);
+
+	MSHookMessageEx(NSClassFromString(@"IGUser"), @selector(isVerified), (IMP) &newVerified, (IMP *) &oldVerified);
+	MSHookMessageEx(NSClassFromString(@"IGUser"), @selector(fullName), (IMP) &newFullName, (IMP *) &oldFullName);
+	MSHookMessageEx(NSClassFromString(@"IGUser"), @selector(username), (IMP) &newUsername, (IMP *) &oldUsername);
 
 }
+
 
 %end

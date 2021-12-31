@@ -1,6 +1,5 @@
-#import <UIKit/UIKit.h>
-#import <stdlib.h>
 #import "Twitter.h"
+
 
 static BOOL enableTweak = false;
 static NSString *targetUsername = NULL;
@@ -11,11 +10,10 @@ static NSString *fullName = NULL;
 static NSString *fakePostText = nil; // establishing nil superiority here >> :thishowitis:
 static BOOL showSeen = true;
 
-static NSString *prefsKeys = @"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctttwitter.plist";
 
 static void loadPrefs() {
 
-	NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:prefsKeys];
+	NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile: kTwitterPath];
 	NSMutableDictionary *prefs = dict ? [dict mutableCopy] : [NSMutableDictionary dictionary];
 
 	enableTweak = prefs[@"enableTweak"] ? [prefs[@"enableTweak"] boolValue] : NO;
@@ -32,95 +30,153 @@ static void loadPrefs() {
 static NSInteger targetUserID = -1;
 static NSMutableArray<TFNDirectMessageEntry *> *messages = NULL;
 
-static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
+static TFNDirectMessageEntry * createMessage(NSString *message, id sender) {
+
 	TFNDirectMessageConversationEntryCanonicalIdentifier *identifier = [[%c(TFNDirectMessageConversationEntryCanonicalIdentifier) alloc] initWithCanonicalID:arc4random_uniform(1000000)];
 
 	return [[%c(TFNDirectMessageEntry) alloc] initWithIdentifier:identifier sender:sender text:message entities:NULL attachment:NULL quickReplyRequest:NULL customProfile:NULL markedAsSpam:false markedAsAbuse:false time:NSDate.date ctas:NULL];
+
 }
 
+
 %hook TFNDirectMessageConversation
+
+
 - (NSArray<TFNDirectMessageEntry *> *)allEntries {
+
 	if(!self.isSelfConversation && self.participantsExcludingPerspectivalUser.count == 1 && self.participantsExcludingPerspectivalUser[0].participatingUser.userID == targetUserID) {
 
-		if(!messages){
+		if(!messages) {
+
 			messages = [NSMutableArray array];
 
 			NSArray<NSDictionary *> *msgs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctttwittermessages.plist"][@"messages"];
 
-			if(msgs) {
+			if(msgs)
+
 				for(NSDictionary *msg in msgs) {
+
 					TFNDirectMessageEntry *entry = createMessage(msg[@"message"], ((NSNumber *) msg[@"me"]).boolValue ? self.perspectivalParticipant.participatingUser : self.participantsExcludingPerspectivalUser[0].participatingUser);
 					entry.conversation = self;
 					[messages addObject:entry];
+
 				}
-			}
+
 		}
 
 		return messages;
+
 	} else return %orig;
+
 }
 
-- (NSMutableArray<TFNDirectMessageEntry *> *)entryList{
-	if(!self.isSelfConversation && self.participantsExcludingPerspectivalUser.count == 1 && self.participantsExcludingPerspectivalUser[0].participatingUser.userID == targetUserID) {
+
+- (NSMutableArray<TFNDirectMessageEntry *> *)entryList {
+
+	if(!self.isSelfConversation && self.participantsExcludingPerspectivalUser.count == 1 && self.participantsExcludingPerspectivalUser[0].participatingUser.userID == targetUserID)
+
 		return [self allEntries].mutableCopy;
-	} else return %orig;
+
+	else return %orig;
+
 }
 
-- (TFNDirectMessageEntry *)latestEntry{
+
+- (TFNDirectMessageEntry *)latestEntry {
+
 	if(!self.isSelfConversation && self.participantsExcludingPerspectivalUser.count == 1 && self.participantsExcludingPerspectivalUser[0].participatingUser.userID == targetUserID) {
+
 		NSArray<TFNDirectMessageEntry *> *messages = [self allEntries];
+
 		if(messages.count > 0) return messages[messages.count - 1];
 		else return NULL;
+
 	} else return %orig;
+
 }
 
+
 %end
+
 
 %hook TFNDirectMessageEntry
+
+
 - (BOOL)seenByAllParticipants {
-	if(!self.conversation.isSelfConversation && self.conversation.participantsExcludingPerspectivalUser.count == 1 && self.conversation.participantsExcludingPerspectivalUser[0].participatingUser.userID == targetUserID) {
+
+	if(!self.conversation.isSelfConversation && self.conversation.participantsExcludingPerspectivalUser.count == 1 && self.conversation.participantsExcludingPerspectivalUser[0].participatingUser.userID == targetUserID)
+
 		return showSeen;
-	} else return %orig;
+
+	else return %orig;
+
 }
+
 
 - (id)seenByParticipants {
-	if(!self.conversation.isSelfConversation && self.conversation.participantsExcludingPerspectivalUser.count == 1 && self.conversation.participantsExcludingPerspectivalUser[0].participatingUser.userID == targetUserID) {
+
+	if(!self.conversation.isSelfConversation && self.conversation.participantsExcludingPerspectivalUser.count == 1 && self.conversation.participantsExcludingPerspectivalUser[0].participatingUser.userID == targetUserID)
 		return showSeen ? self.conversation.participantsExcludingPerspectivalUser : @[];
-	} else return %orig;
+	else return %orig;
+
 }
+
+
 %end
 
+
 %hook TFNDirectMessageUser
-- (void)setDirectMessageUser:(TFSDirectMessageUser *)user{
+
+
+- (void)setDirectMessageUser:(TFSDirectMessageUser *)user {
+
 	%orig;
 
 	if([user.username isEqualToString:targetUsername]) targetUserID = user.userID;
+
 }
+
 
 - (BOOL)verified {
+
 	if(self.userID == targetUserID) return spoofVerified;
 	else return %orig;
+
 }
+
 
 - (NSString *)displayUsername {
+
 	if(self.userID == targetUserID && username && ![username isEqualToString:@""]) return [NSString stringWithFormat:@"@%@", username];
 	else return %orig;
+
 }
+
 
 - (NSString *)displayFullName {
+
 	if(self.userID == targetUserID && fullName && ![fullName isEqualToString:@""]) return fullName;
 	else return %orig;
+
 }
+
+
 %end
 
+
 %hook TFSDirectMessageUser
+
 - (id)profileImageMediaEntity {
+
 	id media = %orig;
 
 	if(self.userID == targetUserID && profilePictureURL && ![profilePictureURL isEqualToString:@""]) MSHookIvar<NSString *>(media, "_mediaURL") = profilePictureURL;
 
 	return media;
+
 }
+
+
 %end
 
 
@@ -136,12 +192,14 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 
 }
 
+
 - (NSString *)fullText {
 
 	if(self.fromUserID == targetUserID) return fakePostText;
 	else return %orig;
 
 }
+
 
 - (NSString *)displayText {
 
@@ -150,6 +208,7 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 
 }
 
+
 - (NSString *)originalText {
 
 	if(self.fromUserID == targetUserID) return fakePostText;
@@ -157,11 +216,14 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 
 }
 
+
 %end
+
+
 
 %hook TFNTwitterCanonicalUser
 
-- (TFNTwitterCanonicalUser *)initWithCS2User:(id)user{
+- (TFNTwitterCanonicalUser *)initWithCS2User:(id)user {
 
 	TFNTwitterCanonicalUser *userr = %orig;
 
@@ -170,6 +232,7 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 	return userr;
 
 }
+
 
 - (id)profileImageMediaEntity {
 
@@ -181,12 +244,14 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 
 }
 
+
 - (BOOL)verified {
 
 	if(self.userID == targetUserID) return spoofVerified;
 	else return %orig;
 
 }
+
 
 - (NSString *)displayUsername {
 
@@ -195,12 +260,14 @@ static TFNDirectMessageEntry * createMessage(NSString *message, id sender){
 
 }
 
+
 - (NSString *)displayFullName {
 
 	if(self.userID == targetUserID && fullName && ![fullName isEqualToString:@""]) return fullName;
 	else return %orig;
 
 }
+
 
 %end
 
