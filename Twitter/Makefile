@@ -1,10 +1,9 @@
-export INSTALL_TARGET_PROCESSES += Twitter
-
-include $(THEOS)/makefiles/common.mk
+INSTALL_TARGET_PROCESSES = Twitter
 
 TWEAK_NAME = LCTTTwitter
 
-LCTTTwitter_FILES = Tweak.xm
+LCTTTwitter_FILES = Twitter.xm
 LCTTTwitter_CFLAGS = -fobjc-arc
 
+include $(THEOS)/makefiles/common.mk
 include $(THEOS_MAKE_PATH)/tweak.mk
