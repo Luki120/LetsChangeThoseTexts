@@ -1,6 +1,6 @@
+@import Preferences.PSSpecifier;
+@import Preferences.PSListController;
 #import "Headers/Constants.h"
-#import <Preferences/PSSpecifier.h>
-#import <Preferences/PSListController.h>
 
 
 @interface LCTTMessagesDelegate : NSObject <UITableViewDelegate, UITableViewDataSource>

@@ -1,5 +1,5 @@
 #import "../Controllers/LCTTApplicationVC.h"
 
 
-@interface LCTTTextViewCell : PSTableCell <UITextViewDelegate>
+@interface LCTTTextViewCell : PSTableCell
 @end

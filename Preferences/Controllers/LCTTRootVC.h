@@ -1,6 +1,6 @@
-#import <Preferences/PSTableCell.h>
-#import <Preferences/PSSpecifier.h>
-#import <Preferences/PSListController.h>
+@import Preferences.PSTableCell;
+@import Preferences.PSSpecifier;
+@import Preferences.PSListController;
 
 
 @interface LCTTRootVC : PSListController

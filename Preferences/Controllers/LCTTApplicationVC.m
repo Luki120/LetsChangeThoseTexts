@@ -7,20 +7,18 @@
 
 }
 
+#define kAppDictionary [NSString stringWithFormat:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctt%@.plist", application.lowercaseString]
 
 - (NSArray *)specifiers {
 
-	if(!_specifiers) {
+	if(_specifiers) return nil;
+	_specifiers = [self loadSpecifiersFromPlistName:[NSString stringWithFormat:@"Applications/%@", application] target:self];
 
-		_specifiers = [self loadSpecifiersFromPlistName:[NSString stringWithFormat:@"Applications/%@", application] target:self];
+	for(PSSpecifier *specifier in _specifiers)
 
-		for(PSSpecifier *specifier in _specifiers)
+		if(specifier.detailControllerClass == [LCTTMessagesVC class])
 
-			if(specifier.detailControllerClass == LCTTMessagesVC.class)
-
-				[specifier setProperty:application forKey:@"Application"];
-
-	}
+			[specifier setProperty:application forKey:@"Application"];
 
 	return _specifiers;
 
@@ -29,8 +27,7 @@
 
 - (void)setSpecifier:(PSSpecifier *)specifier {
 
-	[super setSpecifier:specifier];
-
+	[super setSpecifier: specifier];
 	application = [specifier propertyForKey:@"Application"];
 
 }
@@ -39,23 +36,20 @@
 - (void)viewDidLoad {
 
 	[super viewDidLoad];
-
-	((UITableView *)[self.view.subviews objectAtIndex:0]).keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
+	self.table.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
 
 	UIBarButtonItem *killButtonItem = [[UIBarButtonItem alloc] initWithTitle:[NSString stringWithFormat:@"Kill %@", application]
 		style:UIBarButtonItemStylePlain
 		target:self
-		action:@selector(killApp)
+		action:@selector(didTapKillAppButton)
 	];
-
-	if([application isEqualToString:@"Instagram"]) killButtonItem.tintColor = kIgTintColor;
-	else if ([application isEqualToString:@"Twitter"]) killButtonItem.tintColor = kTwitterTintColor;
+	killButtonItem.tintColor = [application isEqualToString: @"Instagram"] ? kIgTintColor : kTwitterTintColor;
 	self.navigationItem.rightBarButtonItem = killButtonItem;
 
 }
 
 
-- (void)killApp {
+- (void)didTapKillAppButton {
 
 	AudioServicesPlaySystemSound(1521);
 
@@ -71,26 +65,20 @@
 	AudioServicesPlaySystemSound(1521);
 
 	UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"LCTT" message:@"Do you want to start fresh?" preferredStyle:UIAlertControllerStyleAlert];
+	UIAlertAction *confirmAction = [UIAlertAction actionWithTitle:@"Shoot" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
 
-	UIAlertAction *confirmAction = [UIAlertAction actionWithTitle:@"Shoot" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-
-		NSFileManager *fileManager = [NSFileManager defaultManager];
-
-		[fileManager removeItemAtPath:[NSString stringWithFormat:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctt%@.plist", application.lowercaseString] error:NULL];
-		[NSUserDefaults.standardUserDefaults removePersistentDomainForName:[NSString stringWithFormat:@"me.luki.runtimeoverflow.lctt%@messages", application.lowercaseString]];
-		[NSUserDefaults.standardUserDefaults synchronize];
+		[[NSFileManager defaultManager] removeItemAtPath:kAppDictionary error: nil];
+		[NSUserDefaults.standardUserDefaults removePersistentDomainForName: kPersistentDomainName];
 
 		[self crossDissolveBlur];
 
 	}];
-
-	UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Meh" style:UIAlertActionStyleCancel handler:nil];
+	UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Meh" style:UIAlertActionStyleDefault handler:nil];
 
 	[alertController addAction: confirmAction];
 	[alertController addAction: cancelAction];
 
 	[self presentViewController:alertController animated:YES completion:nil];
-
 
 }
 
@@ -99,61 +87,56 @@
 
 	_UIBackdropViewSettings *settings = [_UIBackdropViewSettings settingsForStyle:2];
 
-	_UIBackdropView *backdropView = [[_UIBackdropView alloc] initWithSettings:settings];
+	_UIBackdropView *backdropView = [[_UIBackdropView alloc] initWithFrame:CGRectZero autosizesToFitSuperview:YES settings:settings];
 	backdropView.alpha = 0;
-	backdropView.frame = self.view.bounds;
 	backdropView.clipsToBounds = YES;
-	backdropView.layer.masksToBounds = YES;
-	[self.view addSubview:backdropView];
+	[self.view addSubview: backdropView];
 
 	[UIView animateWithDuration:1 delay:0 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
 
 		backdropView.alpha = 1;
 
-	} completion:^(BOOL finished) { [self popViewController]; }];
+	} completion:^(BOOL finished) { [self popVC]; }];
 
 }
 
 
-- (void)popViewController {
+- (void)popVC {
 
 	[self.navigationController popViewControllerAnimated: YES];
-
-	[self killApp];
+	[self didTapKillAppButton];
 
 }
 
 
 - (id)readPreferenceValue:(PSSpecifier *)specifier {
 
-	NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithContentsOfFile:[NSString stringWithFormat:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctt%@.plist", application.lowercaseString]];
-	return (settings[specifier.properties[@"key"]]) ?: specifier.properties[@"default"];
+	NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithContentsOfFile: kAppDictionary];
+	return settings[specifier.properties[@"key"]] ?: specifier.properties[@"default"];
 
 }
 
 
 - (void)setPreferenceValue:(id)value specifier:(PSSpecifier *)specifier {
 
-	NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithContentsOfFile:[NSString stringWithFormat:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctt%@.plist", application.lowercaseString]];
+	NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithContentsOfFile: kAppDictionary];
 	if(!settings) settings = [NSMutableDictionary dictionary];
 	[settings setObject:value forKey:specifier.properties[@"key"]];
-	[settings writeToFile:[NSString stringWithFormat:@"/var/mobile/Library/Preferences/me.luki.runtimeoverflow.lctt%@.plist", application.lowercaseString] atomically:YES];
+	[settings writeToFile:kAppDictionary atomically:YES];
+
+	[super setPreferenceValue:value specifier: specifier];
 
 }
 
 
-#pragma mark Table View Data Source
+// ! UITableViewDataSource
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
 	UITableViewCell *cell = [super tableView:tableView cellForRowAtIndexPath: indexPath];
-
-	cell.textLabel.textColor = ([application isEqualToString:@"Instagram"]) ? kIgTintColor : kTwitterTintColor;
-	cell.textLabel.highlightedTextColor = ([application isEqualToString:@"Instagram"]) ? kIgTintColor : kTwitterTintColor;
-
+	cell.textLabel.textColor = [application isEqualToString:@"Instagram"] ? kIgTintColor : kTwitterTintColor;
 	return cell;
 
 }
-
 
 @end

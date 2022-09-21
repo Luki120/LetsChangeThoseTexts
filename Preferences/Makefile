@@ -1,8 +1,8 @@
-export INSTALL_TARGET_PROCESSES += Preferences
+INSTALL_TARGET_PROCESSES = Preferences
 
 BUNDLE_NAME = LCTTPreferences
 
-LCTTPreferences_FILES = Controllers/LCTTApplicationVC.m Controllers/LCTTMessagesVC.m Controllers/LCTTRootVC.m Cells/LCTTTextViewCell.m
+LCTTPreferences_FILES = $(wildcard Controllers/*.m) $(wildcard Cells/*.m)
 LCTTPreferences_CFLAGS = -fobjc-arc
 LCTTPreferences_FRAMEWORKS = UIKit
 LCTTPreferences_PRIVATE_FRAMEWORKS = Preferences

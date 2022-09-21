@@ -1,8 +1,8 @@
+@import AudioToolbox.AudioServices;
+@import Preferences.PSListController;
+@import Preferences.PSSpecifier;
+@import Preferences.PSTableCell;
 #import <spawn.h>
-#import <Preferences/PSSpecifier.h>
-#import <Preferences/PSTableCell.h>
-#import <AudioToolbox/AudioServices.h>
-#import <Preferences/PSListController.h>
 #import "LCTTMessagesVC.h"
 #import "Headers/Constants.h"
 
@@ -17,5 +17,5 @@
 
 
 @interface _UIBackdropView : UIView
-- (id)initWithSettings:(id)arg1;
+- (id)initWithFrame:(CGRect)arg1 autosizesToFitSuperview:(BOOL)arg2 settings:(id)arg3;
 @end
