@@ -1,25 +1,21 @@
-@import UIKit;
-#import <stdlib.h>
 #import "Headers/Constants.h"
 
 
 @interface IGDirectPublishedMessageMetadata
 @property (nonatomic, readonly) NSString *serverId;
 @property (nonatomic, readonly) NSString *clientContext;
-- (instancetype)initWithServerTimestamp:(NSDate *)timestamp serverId:(NSString *)serverId clientContext:(NSString *)clientContext threadId:(NSString *)threadId senderPk:(NSString *)senderPk;
+- (instancetype)initWithServerTimestamp:(NSDate *)timestamp serverId:(NSString *)serverId clientContext:(NSString *)clientContext threadId:(NSString *)threadId senderPk:(NSString *)senderPk isBusinessSuggestionProcessed:(BOOL)isBusinessSuggestionProcessed;
 @end
 
 
 @interface IGDirectPublishedMessageContent
-+ (instancetype)media:(id)media;
-+ (instancetype)reshareWithAttackment:(id)attachment comment:(id)comment;
-+ (instancetype)textWithString:(NSString *)text mentionedUserPks:(NSArray *)mentionedUserPks mentionedUsers:(NSArray *)users;
++ (instancetype)textWithString:(NSString *)text translatedString:(NSString *)translatedString mentionedUserPks:(NSArray *)mentionedUserPks messageCommands:(id)messageCommands sendSilently:(BOOL)sendSilently textFormatters:(id)textFormatters;
 @end
 
 
 @interface IGDirectPublishedMessage
 @property (nonatomic, readonly) IGDirectPublishedMessageMetadata *metadata;
-- (instancetype)initWithMetadata:(IGDirectPublishedMessageMetadata *)metadata content:(IGDirectPublishedMessageContent *)content quotedMessage:(id)quotedMessage reactions:(NSArray *)reactions forwardMetadata:(id)forwardMetadata powerupsMetadata:(id)powerupsMetadata violationReview:(id)violationReview instantReplies:(NSArray *)replies isShhMode:(BOOL)shhMode;
+- (instancetype)initWithMetadata:(IGDirectPublishedMessageMetadata *)metadata content:(IGDirectPublishedMessageContent *)content collectionSaveIconState:(NSInteger)iconState quotedMessage:(id)quotedMessage reactions:(NSArray *)reactions forwardMetadata:(id)forwardMetadata powerupsMetadata:(id)powerupsMetadata violationReview:(id)violationReview instantReplies:(NSArray *)replies auxiliaryContent:(id)auxiliaryContent isShhMode:(BOOL)shhMode;
 @end
 
 
@@ -28,8 +24,13 @@
 @end
 
 
+@interface IGDirectPublishedMessageSet : NSObject
+- (instancetype)initWithSortedMessages:(NSArray *)messages messagesByServerId:(NSDictionary *)messagesByServerId messagesByClientContext:(NSDictionary *)messagesByClientContext;
+@end
+
+
 @interface IGUser
-@property (atomic, copy, readwrite) NSString *pk;
+@property (atomic, copy) NSString *pk;
 @end
 
 
@@ -52,21 +53,6 @@
 @end
 
 
-@interface IGProfilePictureImageProcessor : NSObject
-- (UIImage *)processedImageFromImage:(UIImage *)image;
-@end
-
-
-@interface IGImageView : UIImageView
-@property (nonatomic, readwrite, strong) IGProfilePictureImageProcessor *imageProcessor;
-@end
-
-
-@interface IGDirectPublishedMessageSet : NSObject
-- (instancetype)initWithSortedMessages:(NSArray *)messages messagesByServerId:(NSDictionary *)messagesByServerId messagesByClientContext:(NSDictionary *)messagesByClientContext;
-@end
-
-
 @interface IGUserStore : NSObject
 - (IGUser *)storedUserWithUsername:(NSString *)username;
 - (IGUser *)userWithPK:(NSString *)pk;
@@ -79,10 +65,10 @@
 
 
 @interface IGWindow : UIWindow
-@property (nonatomic, readwrite, weak) IGUserSession *userSession;
+@property (nonatomic, weak) IGUserSession *userSession;
 @end
 
 
 @interface IGAppDelegate : NSObject
-@property (nonatomic, readwrite, strong) IGWindow *window;
+@property (nonatomic, strong) IGWindow *window;
 @end
