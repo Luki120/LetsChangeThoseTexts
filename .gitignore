@@ -1,3 +1,4 @@
-
-**/.theos/
-**/packages/
+.cache/
+compile_commands.json
+.theos/
+packages/
