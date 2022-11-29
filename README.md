@@ -14,7 +14,8 @@
 
 ## Socials
 
-* [Twitter](https://twitter.com/Lukii120)
+* [Luki120](https://twitter.com/Lukii120)
+* [RuntimeOverflow](https://twitter.com/RuntimeOverflow)
 
 ## Contributing
 
@@ -26,7 +27,9 @@
 
 ## LICENSE
 
-* [Mozilla Public License 2.0](https://www.mozilla.org/en-US/MPL/2.0/)
+* If you use code from this repository you're agreeing to link the GitHub project and/or our social media in your project.
+* **IT'S FORBIDDEN** the redistribution of this source code or packages from it, it's only meant for **EDUCATIONAL PURPOSES.**
+* **IT'S FORBIDDEN** the usage of this project to make profit out of it, no matter the kind.
 
 ## Assets LICENSE
 
