@@ -39,7 +39,20 @@
 
 @interface TFNDirectMessageEntry : NSObject
 @property (nonatomic, weak) TFNDirectMessageConversation *conversation;
-- (instancetype)initWithIdentifier:(id)identifier sender:(id)sender text:(id)text entities:(id)entities attachment:(id)attachment quickReplyRequest:(id)quickReplyRequest customProfile:(id)customProfile markedAsSpam:(BOOL)markedAsSpam markedAsAbuse:(BOOL)markedAsAbuse time:(id)time ctas:(id)ctas searchTokens:(id)searchTokens;
+- (instancetype)initWithIdentifier:(id)identifier
+	sender:(id)sender
+	text:(id)text
+	entities:(id)entities
+	attachment:(id)attachment
+	quickReplyRequest:(id)quickReplyRequest
+	customProfile:(id)customProfile
+	markedAsSpam:(BOOL)markedAsSpam
+	markedAsAbuse:(BOOL)markedAsAbuse
+	time:(id)time
+	ctas:(id)ctas
+	searchTokens:(id)searchTokens
+	senderDeviceID:(id)senderDeviceID
+	encryptedText:(id)encryptedText;
 @end
 
 

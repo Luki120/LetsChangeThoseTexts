@@ -144,7 +144,21 @@ static NSString *overrideText(TFNTwitterStatus *self, SEL _cmd) {
 static TFNDirectMessageEntry *createMessage(NSString *message, id sender) {
 
 	TFNDirectMessageConversationEntryCanonicalIdentifier *identifier = [[kClass(@"TFNDirectMessageConversationEntryCanonicalIdentifier") alloc] initWithCanonicalID:arc4random_uniform(1000000)];
-	return [[kClass(@"TFNDirectMessageEntry") alloc] initWithIdentifier:identifier sender:sender text:message entities:NULL attachment:NULL quickReplyRequest:NULL customProfile:NULL markedAsSpam:false markedAsAbuse:false time:NSDate.date ctas:NULL searchTokens:nil];
+	return [[kClass(@"TFNDirectMessageEntry") alloc] initWithIdentifier:identifier
+		sender:sender
+		text:message
+		entities:NULL
+		attachment:NULL
+		quickReplyRequest:NULL
+		customProfile:NULL
+		markedAsSpam:false
+		markedAsAbuse:false
+		time:NSDate.date
+		ctas:NULL
+		searchTokens:nil
+		senderDeviceID:nil
+		encryptedText:nil
+	];
 
 }
 
