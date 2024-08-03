@@ -1,6 +1,6 @@
 # LetsChangeThoseTexts
 
-<img src="https://raw.githubusercontent.com/Luki120/luki120.github.io/master/assets/Misc/LCTTInstagram.png" width="300"> &nbsp; <img src="https://raw.githubusercontent.com/Luki120/luki120.github.io/master/assets/Misc/LCTTTwitter.png" width="300">
+<img src="Assets/LCTTInstagram.png" width="300"> &nbsp; <img src="Assets/LCTTTwitter.png" width="300">
 
 ## Features
 
